@@ -1,26 +1,256 @@
-@import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* =========================================
+   Tailwind v4 + shadcn/ui Theme Mapping
+   ========================================= */
 
 @theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+
+  /* Core semantic colors */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Additional design-system colors */
+  --color-surface: var(--surface);
+  --color-brass: var(--brass);
+  --color-brass-soft: var(--brass-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+
+  /* Chart colors */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* Sidebar colors for shadcn/ui */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Typography */
+  --font-sans: var(--font-sans);
+  --font-display: "Newsreader", Georgia, serif;
+  --font-heading: var(--font-sans);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* =========================================
+   My Library — Light Theme
+   Main background: #FFFFFF
+   Primary:         #193B36
+   Accent / Brass:  #B78B52
+   Text:            #202923
+   Border:          #E3E1DA
+   ========================================= */
+
+:root {
+  color-scheme: light;
+
+  --radius: 0.625rem;
+
+  --background: #ffffff;
+  --foreground: #202923;
+
+  /* Surfaces */
+  --surface: #ffffff;
+  --card: #ffffff;
+  --card-foreground: #202923;
+  --popover: #ffffff;
+  --popover-foreground: #202923;
+
+  /* Brand */
+  --primary: #193b36;
+  --primary-foreground: #ffffff;
+
+  /* Secondary */
+  --secondary: #f1f0eb;
+  --secondary-foreground: #193b36;
+
+  /* Muted */
+  --muted: #f1f0eb;
+  --muted-foreground: #747c75;
+
+  /* Accent */
+  --accent: var(--brass-soft);
+  --accent-foreground: #193b36;
+
+  /* Status */
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: #ffffff;
+
+  --success: #2f6b4f;
+  --success-soft: #edf5ef;
+
+  /* Borders and focus */
+  --border: #e3e1da;
+  --input: #e3e1da;
+  --ring: var(--brass);
+
+  /* Brass / gold */
+  --brass: #b78b52;
+  --brass-soft: #f5eee3;
+
+  /* Charts */
+  --chart-1: #193b36;
+  --chart-2: #b78b52;
+  --chart-3: #2f6b4f;
+  --chart-4: #747c75;
+  --chart-5: #e3e1da;
+
+  /* Sidebar */
+  --sidebar: #ffffff;
+  --sidebar-foreground: #202923;
+  --sidebar-primary: #193b36;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f1f0eb;
+  --sidebar-accent-foreground: #193b36;
+  --sidebar-border: #e3e1da;
+  --sidebar-ring: var(--brass);
+
+  /* Dialog shadow */
+  --shadow-dialog: 0 24px 48px -16px rgb(32 41 35 / 14%);
+}
+
+/* =========================================
+   My Library — Dark Theme
+   Activated by adding class="dark"
+   ========================================= */
+
+.dark {
+  color-scheme: dark;
+
+  --background: #1c2421;
+  --foreground: #f1f0eb;
+
+  --surface: #1c2421;
+  --card: #1c2421;
+  --card-foreground: #f1f0eb;
+  --popover: #1c2421;
+  --popover-foreground: #f1f0eb;
+
+  --primary: #193b36;
+  --primary-foreground: #ffffff;
+
+  --secondary: color-mix(in srgb, var(--surface) 82%, white);
+  --secondary-foreground: #f1f0eb;
+
+  --muted: color-mix(in srgb, var(--surface) 82%, white);
+  --muted-foreground: #a8b1aa;
+
+  --accent: var(--brass-soft);
+  --accent-foreground: var(--brass);
+
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: #240b0b;
+
+  --success: #86c7a0;
+  --success-soft: #20392c;
+
+  --border: rgb(255 255 255 / 10%);
+  --input: rgb(255 255 255 / 15%);
+  --ring: var(--brass);
+
+  --brass: #cba36d;
+  --brass-soft: #3b3226;
+
+  --chart-1: #193b36;
+  --chart-2: #cba36d;
+  --chart-3: #86c7a0;
+  --chart-4: #a8b1aa;
+  --chart-5: #f1f0eb;
+
+  --sidebar: #1c2421;
+  --sidebar-foreground: #f1f0eb;
+  --sidebar-primary: #193b36;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--brass-soft);
+  --sidebar-accent-foreground: var(--brass);
+  --sidebar-border: rgb(255 255 255 / 10%);
+  --sidebar-ring: var(--brass);
+
+  --shadow-dialog: 0 24px 48px -16px rgb(0 0 0 / 40%);
+}
+
+/* =========================================
+   Base Styles
+   ========================================= */
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    @apply font-sans;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "cv11", "ss01";
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* =========================================
+   Custom Utilities
+   ========================================= */
+
+@utility font-display {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  letter-spacing: -0.01em;
+}
+
+@utility shadow-dialog {
+  box-shadow: var(--shadow-dialog);
 }
