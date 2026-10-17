@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-
+import { Toaster } from "@/components/ui/sonner";
 
 import HeaderAtMobile from "./components/common/HeaderAtMobile";
 import SideBar from "./components/common/SideBar";
@@ -35,6 +35,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <main className="ml-16 min-h-dvh bg-background sm:ml-64">
           {children}
         </main>
+        <Toaster />
       </body>
     </html>
   );
