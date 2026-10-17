@@ -1,4 +1,4 @@
-import type { Book, BookFormValues } from "@/types/book";
+import type { Book, BookFormValues } from "@/app/types/book";
 
 export interface BooksRepository {
   listActive(): Book[];

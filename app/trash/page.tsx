@@ -5,7 +5,7 @@ import { RotateCcw, Trash2 } from "lucide-react";
 import Title from "@/app/components/common/Title";
 import { Button } from "@/components/ui/button";
 import { mockBooksRepository } from "@/lib/books/mock-books-repository";
-import type { Book } from "@/types/book";
+import type { Book } from "@/app/types/book";
 
 const formatDate = (value: string) =>
   new Intl.DateTimeFormat("en", {

@@ -1,5 +1,5 @@
 import { mockBooks } from "@/data/mock-books";
-import type { Book, BookFormValues } from "@/types/book";
+import type { Book, BookFormValues } from "@/app/types/book";
 import type { BooksRepository } from "@/lib/books/books-repository";
 
 let books: Book[] = mockBooks.map((book) => ({ ...book }));

@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { BookOpen, LayoutGridCircles, Trash2 } from "lucide-react";
-import { NavigationType } from "@/app/types/NavigationType";
+import type { NavigationType } from "@/app/types/NavigationType";
 import { usePathname } from "next/navigation";
 
 const navigation: NavigationType[] = [

@@ -1,4 +1,4 @@
-import type { Book } from "@/types/book";
+import type { Book } from "@/app/types/book";
 
 const createIsoDate = (date: string) => new Date(date).toISOString();
 
