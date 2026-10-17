@@ -71,7 +71,7 @@ function BooksPage() {
       </div>
 
       <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between py-6">
           <div className="w-full md:max-w-sm">
             <label htmlFor="book-search" className="mb-2 block text-sm font-medium text-foreground">
               Search by title
