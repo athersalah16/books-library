@@ -72,9 +72,9 @@
   --color-sidebar-ring: var(--sidebar-ring);
 
   /* Typography */
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-geist-sans);
   --font-display: "Newsreader", Georgia, serif;
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-geist-sans);
 }
 
 /* =========================================
