@@ -9,7 +9,7 @@ import {
 import { Plus } from "lucide-react";
 
 type Props = {
-  handleClick: () => void;
+  handleClick?: () => void;
 };
 
 function AddBtn({ handleClick }: Props  ) {
