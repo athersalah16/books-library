@@ -1,21 +1,37 @@
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 import { Plus } from "lucide-react";
 
-type AddBtnProps = {
-  onClick?: () => void;
+type Props = {
+  handleClick: () => void;
 };
 
-function AddBtn({ onClick }: AddBtnProps) {
+function AddBtn({ handleClick }: Props  ) {
   return (
-    <Button
-      type="button"
-      variant="default"
-      size="lg"
-      className="w-32 cursor-pointer py-5"
-      onClick={onClick}
-    >
-      <Plus size={16} /> Add Book
-    </Button>
+    <DropdownMenu >
+      <DropdownMenuTrigger
+        render={<Button variant="default" size="lg" className="w-40" />}
+      >
+        <Plus size={16} /> Add Book
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className={`max-w-lg`}>
+        <DropdownMenuGroup>
+          <DropdownMenuItem onClick={handleClick}>
+            Add Book Manually
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => console.log("Add Book With AI clicked")}>
+            Add Book With AI
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 

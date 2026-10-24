@@ -5,6 +5,8 @@ import { Toaster } from "@/components/ui/sonner";
 
 import HeaderAtMobile from "./components/common/HeaderAtMobile";
 import SideBar from "./components/common/SideBar";
+import BooksProvider from './context/BooksProvider';
+import { ClerkProvider } from "@clerk/nextjs";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,14 +30,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-dvh bg-background text-foreground">
-        <div className="md:flex hidden">
+        <ClerkProvider>  <BooksProvider> <div className="md:flex hidden w-16">
           <SideBar />
         </div>
-        <HeaderAtMobile />
-        <main className="ml-16 min-h-dvh bg-background sm:ml-64">
-          {children}
-        </main>
-        <Toaster />
+          <HeaderAtMobile />
+          <main className=" min-h-dvh bg-background sm:ml-64">
+            {children}
+          </main>
+          <Toaster /></BooksProvider></ClerkProvider>
       </body>
     </html>
   );

@@ -13,7 +13,7 @@ const navigation: NavigationType[] = [
 function SideBar() {
   const pathname = usePathname();
   return (
-    <aside className="fixed inset-y-0 left-0 z-50 flex h-dvh w-16 flex-col border-r  border-sidebar-border bg-sidebar text-sidebar-foreground sm:w-64">
+    <aside className="fixed inset-y-0 left-0 z-50 flex h-dvh w-full flex-col border-r  border-sidebar-border bg-sidebar text-sidebar-foreground sm:w-64">
       <div className="flex flex-row gap-2 p-4">
         <Image
           src="/logo.png"
@@ -23,7 +23,7 @@ function SideBar() {
           className="size-10 shrink-0 rounded-lg object-cover"
           priority
         />
-        <span className="hidden py-2 text-lg font-semibold tracking-tight sm:inline items-center">
+        <span className="py-2 text-lg font-semibold tracking-tight">
           Maktabty
         </span>
       </div>
@@ -40,7 +40,7 @@ function SideBar() {
                    sm:justify-start`}
               >
                 <Icon aria-hidden="true" className="size-5 shrink-0" />
-                <span className="hidden sm:inline">{label}</span>
+                <span>{label}</span>
               </Link>
             </li>
           ))}

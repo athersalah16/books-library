@@ -1,5 +1,5 @@
-'use client'
-import {  Menu, X } from "lucide-react";
+"use client";
+import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import SideBar from "./SideBar";
 
@@ -9,13 +9,23 @@ function HeaderAtMobile() {
     setIsOpen(!isOpen);
   };
   return (
-    <div onClick={handleClick} className="p-4 cursor-pointer">
-          {isOpen  && <SideBar />}
-        <div className="md:hidden flex">
-          {isOpen ? <X />:<Menu/>}
+    <>
+      <button
+        type="button"
+        aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
+        aria-expanded={isOpen}  
+        onClick={handleClick}
+        className="fixed right-4 top-4 z-60 flex cursor-pointer items-center justify-center rounded-md bg-background p-2 text-foreground md:hidden"
+      >
+        {isOpen ? <X /> : <Menu />}
+      </button>
+      {isOpen && (
+        <div className="md:hidden">
+          <SideBar />
         </div>
-    </div>
-  )
+      )}
+    </>
+  );
 }
 
-export default HeaderAtMobile
+export default HeaderAtMobile;

@@ -1,8 +1,19 @@
-import { mockBooksRepository } from "@/lib/books/mock-books-repository";
 import { BookOpen, Library, Plus, Trash2 } from "lucide-react";
+import type { Book } from "@/app/types/book";
 
-function Summary() {
-  const stats = mockBooksRepository.getDashboardStats();
+type Props = {
+  books: Book[];
+};
+
+function Summary({ books }: Props) {
+  const activeBooks = books.filter((book) => !book.deletedAt);
+  const deletedBooks = books.filter((book) => book.deletedAt);
+  const stats = {
+    totalActive: activeBooks.length,
+    totalCategories: new Set(activeBooks.map((book) => book.category)).size,
+    totalLocations: new Set(activeBooks.map((book) => book.location)).size,
+    totalDeleted: deletedBooks.length,
+  };
 
   const summary = [
     { name: "Active books", icon: Library, value: stats.totalActive },
