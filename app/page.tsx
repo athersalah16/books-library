@@ -8,8 +8,7 @@ import Summary from "./components/Summary";
 import { useBooksContext } from "./context/BooksContext";
 
 export default function Home() {
-  const { books, handleSave } = useBooksContext();
-  const [isOpen, setIsOpen] = useState(false);
+  const { books, handleSave,  isOpen, setIsOpen } = useBooksContext();
 
   const handleClick =() => {
     setIsOpen(true);

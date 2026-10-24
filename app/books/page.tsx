@@ -11,29 +11,15 @@ import CategorySelector from "./components/CategorySelector";
 import { useBooksContext } from "../context/BooksContext";
 
 function BooksPage() {
-  const { books, handleSave } = useBooksContext();
+  const { books, handleSave , setIsOpen } = useBooksContext();
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBook, setEditingBook] = useState<Book | null>(null);
 
-  const categories = useMemo(
-    () => ["All", ...new Set(books.map((book) => book.category))],
-    [books],
-  );
-
-  const filteredBooks = useMemo(() => {
-    const normalizedQuery = search.trim().toLowerCase();
-
-    return books.filter((book) => {
-      const matchesQuery =
-        !normalizedQuery || book.title.toLowerCase().includes(normalizedQuery);
-      const matchesCategory =
-        selectedCategory === "All" || book.category === selectedCategory;
-
-      return matchesQuery && matchesCategory;
-    });
-  }, [books, search, selectedCategory]);
+const handleClick =() => {
+    setIsOpen(true);
+  }
 
   const saveBook = async (values: Parameters<typeof handleSave>[0]) => {
     await handleSave(values, editingBook?.id);
@@ -48,7 +34,7 @@ function BooksPage() {
           description="Browse your entire book collection."
         />
         <AddBtn
-         
+          handleClick={ handleClick}
         />
       </div>
 
@@ -59,7 +45,7 @@ function BooksPage() {
           <CategorySelector
             selectedCategory={selectedCategory}
             setSelectedCategory={setSelectedCategory}
-            categories={categories}
+            categories={[]}
           />
 
           <BookFormDialog

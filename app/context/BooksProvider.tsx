@@ -11,13 +11,14 @@ type Props = {
 
 function BooksProvider({ children }: Props) {
   const [books, setBooks] = useState<Book[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleSave = async () => {
     toast.success(`"Book Title" was added to your inventory.`);
   };
 
   return (
-    <BooksContext.Provider value={{ books, handleSave }}>
+    <BooksContext.Provider value={{ books, handleSave, isOpen, setIsOpen }}>
       {children}
     </BooksContext.Provider>
   );

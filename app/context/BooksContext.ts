@@ -5,6 +5,8 @@ import { Book, BookFormValues } from "../types/book";
 type BooksContextType = {
   books: Book[];
   handleSave: (values: BookFormValues, bookId?: string) => Promise<void>;
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
 };
 
 export const BooksContext = createContext<BooksContextType | undefined>(
