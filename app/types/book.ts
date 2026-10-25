@@ -1,22 +1,34 @@
 export interface Book {
-  id: string;
+  user_id: string;
   title: string;
   category: string;
+  author: string;
   location: string;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
+  shelf_number: string;
+  language: string;
+  created_at: string;
+  updated_at: string;
+  is_deleted: boolean;
 }
 
-export interface BookFormValues {
+export type BookFormValues = {
   title: string;
   category: string;
+  author: string;
+  shelf_number: string;
   location: string;
-}
- export type BookFormDialogProps = {
+  language: string;
+};
+export type BookFormDialogProps = {
   open: boolean;
   onOpenChange: (value: boolean) => void;
   mode: "create" | "edit";
   initialBook?: Book | null;
   onSave: (values: BookFormValues) => Promise<void> | void;
+};
+
+export type BooksFields = {
+  name: keyof BookFormValues;
+  label: string;
+  placeholder: string;
 };

@@ -1,7 +1,5 @@
 "use client";
-
-import { useState } from "react";
-import { AlertTriangle } from "lucide-react";
+import {useState, FormEvent} from "react";
 
 import {
   AlertDialog,
@@ -14,170 +12,121 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { AlertTriangle } from "lucide-react";
 import Image from "next/image";
-import { BookFormDialogProps, BookFormValues } from "@/app/types/book";
-
-const emptyForm = (): BookFormValues => ({
-  title: "",
-  category: "",
-  location: "",
-});
+import { Book, BookFormDialogProps, BookFormValues, BooksFields } from "@/app/types/book";
+import { validateData } from "@/app/utils/validateData";
+import { useBooksContext } from "@/app/context/BooksContext";
 
 function BookFormDialog({
   open,
   onOpenChange,
   mode,
-  initialBook,
-  onSave,
-}: BookFormDialogProps) {
-  const defaultValues: BookFormValues = initialBook
-    ? {
-        title: initialBook.title,
-        category: initialBook.category,
-        location: initialBook.location,
-      }
-    : emptyForm();
 
-  const [formValues, setFormValues] = useState<BookFormValues>(defaultValues);
+
+}: BookFormDialogProps) {
+  const [formValues, setFormValues] = useState<BookFormValues>({
+    title: "",
+    category: "",
+    location: "",
+    author: "",
+    shelf_number: "",
+    language: "",
+
+  });
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { handleSave } = useBooksContext();
+
+  const fields: BooksFields[] = [
+    { name: "title", label: "Title", placeholder: "Enter a book title" },
+    { name: "author", label: "Author", placeholder: "Enter the author name" },
+    { name: "category", label: "Category", placeholder: "e.g. Fiction" },
+    { name: "location", label: "Location", placeholder: "e.g. Main Shelf A" },
+    { name: "shelf_number", label: "Shelf number", placeholder: "e.g. A-12" },
+    { name: "language", label: "Language", placeholder: "e.g. English" },
+  ];
 
   const handleFieldChange = (field: keyof BookFormValues, value: string) => {
     setFormValues((current) => ({ ...current, [field]: value }));
-    if (error) {
-      setError("");
-    }
+
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const cleanedValues: BookFormValues = {
-      title: formValues.title.trim(),
-      category: formValues.category.trim(),
-      location: formValues.location.trim(),
-    };
-
-    if (
-      !cleanedValues.title ||
-      !cleanedValues.category ||
-      !cleanedValues.location
-    ) {
-      setError("Please complete title, category, and location before saving.");
+    const isValid = validateData(formValues);
+    if (!isValid) {
+      setError("Please fill in all the required fields.");
       return;
     }
-
+    setError("");
     setIsSubmitting(true);
-
-    try {
-      await onSave(cleanedValues);
-      onOpenChange(false);
-    } catch (caughtError) {
-      setError(
-        caughtError instanceof Error
-          ? caughtError.message
-          : "Unable to save this book right now.",
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
+    
+    const newBook: Book = {
+      user_id: "1",
+      ...formValues,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      is_deleted: false,
+    };
+    await handleSave(newBook);
   };
 
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="max-w-xl rounded-2xl border border-border bg-card shadow-dialog">
-        <AlertDialogHeader className="items-start text-left">
-          <div className="mb-2 inline-flex size-11 items-center justify-center rounded-xl bg-brass-soft text-primary">
-            <Image src={"/logo.png"} alt="Logo" width={44} height={44} />{" "}
-          </div>
+  <AlertDialog open={open} onOpenChange={onOpenChange}>
+    <AlertDialogContent className="max-w-xl rounded-2xl border border-border bg-card shadow-dialog">
+      <AlertDialogHeader className="items-start text-left">
+        <span className="mb-2 inline-flex size-11 items-center justify-center rounded-xl bg-brass-soft text-primary">
+          <Image src={"/logo.png"} alt="Logo" width={44} height={44} />
+        </span>
 
-          <AlertDialogTitle>
-            {mode === "create" ? "Add a new book" : "Edit book details"}
-          </AlertDialogTitle>
+        <AlertDialogTitle>
+          {mode === "create" ? "Add a new book" : "Edit book details"}
+        </AlertDialogTitle>
 
-          <AlertDialogDescription>
-            {mode === "create"
-              ? "Add a book to your physical inventory and place it in the right shelf."
-              : "Update the book metadata and storage location."}
-          </AlertDialogDescription>
-        </AlertDialogHeader>
+        <AlertDialogDescription>
+          {mode === "create"
+            ? "Add a book to your physical inventory and place it in the right shelf."
+            : "Update the book metadata and storage location."}
+        </AlertDialogDescription>
+      </AlertDialogHeader>
 
-        <form id="book-form" onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <label
-              className="text-sm font-medium text-foreground"
-              htmlFor="book-title"
-            >
-              Title
-            </label>
+      <form id="book-form" onSubmit={handleSubmit} className="space-y-4">
+        {fields.map(({ name, label, placeholder }) => (
+          <label key={name} className="flex flex-col gap-2 text-sm font-medium text-foreground">
+            {label}
             <Input
-              id="book-title"
-              value={formValues.title}
-              onChange={(event) =>
-                handleFieldChange("title", event.target.value)
-              }
-              placeholder="Enter a book title"
+              id={`book-${name}`}
+              value={formValues[name]}
+              onChange={(event) => handleFieldChange(name, event.target.value)}
+              placeholder={placeholder}
             />
-          </div>
+          </label>
+        ))}
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <label
-                className="text-sm font-medium text-foreground"
-                htmlFor="book-category"
-              >
-                Category
-              </label>
-              <Input
-                id="book-category"
-                value={formValues.category}
-                onChange={(event) =>
-                  handleFieldChange("category", event.target.value)
-                }
-                placeholder="e.g. Fiction"
-              />
-            </div>
+        {error && (
+          <p className="flex items-start gap-2 rounded-lg border border-destructive/40 bg-destructive/8 px-3 py-2 text-sm text-destructive">
+            <AlertTriangle className="mt-0.5 size-4 shrink-0" />
+            <span>{error}</span>
+          </p>
+        )}
+      </form>
 
-            <div className="space-y-2">
-              <label
-                className="text-sm font-medium text-foreground"
-                htmlFor="book-location"
-              >
-                Location
-              </label>
-              <Input
-                id="book-location"
-                value={formValues.location}
-                onChange={(event) =>
-                  handleFieldChange("location", event.target.value)
-                }
-                placeholder="e.g. Main Shelf A"
-              />
-            </div>
-          </div>
-
-          {error && (
-            <div className="flex items-start gap-2 rounded-lg border border-destructive/40 bg-destructive/8 px-3 py-2 text-sm text-destructive">
-              <AlertTriangle className="mt-0.5 size-4 shrink-0" />
-              <span>{error}</span>
-            </div>
-          )}
-        </form>
-
-        <AlertDialogFooter>
-          <AlertDialogCancel onClick={() => onOpenChange(false)}>
-            Cancel
-          </AlertDialogCancel>
-          <Button type="submit" form="book-form" disabled={isSubmitting}>
-            {isSubmitting
-              ? "Saving..."
-              : mode === "create"
-                ? "Add Book"
-                : "Save Changes"}
-          </Button>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+      <AlertDialogFooter>
+        <AlertDialogCancel onClick={() => onOpenChange(false)}>
+          Cancel
+        </AlertDialogCancel>
+        <Button type="submit" form="book-form" disabled={isSubmitting}>
+          {isSubmitting
+            ? "Saving..."
+            : mode === "create"
+              ? "Add Book"
+              : "Save Changes"}
+        </Button>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog >
   );
 }
 

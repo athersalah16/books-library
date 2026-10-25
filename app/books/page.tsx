@@ -5,64 +5,51 @@ import Title from "@/app/components/common/Title";
 import AddBtn from "@/app/components/common/AddBtn";
 import BookFormDialog from "@/app/books/components/BookFormDialog";
 import { Book } from "@/app/types/book";
-import BaseTable from "../components/common/BaseTable";
 import BooksSearch from "./components/BooksSearch";
 import CategorySelector from "./components/CategorySelector";
 import { useBooksContext } from "../context/BooksContext";
+import Header from "../components/common/Header";
 
 function BooksPage() {
-  const { books, handleSave , setIsOpen } = useBooksContext();
+  const { books, isOpen, handleSave, setIsOpen } = useBooksContext();
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBook, setEditingBook] = useState<Book | null>(null);
 
-const handleClick =() => {
-    setIsOpen(true);
+  const handleClick = () => {
+    setIsOpen(!isOpen);
   }
 
   const saveBook = async (values: Parameters<typeof handleSave>[0]) => {
-    await handleSave(values, editingBook?.id);
+    // await handleSave(values, editingBook?.id);
     setEditingBook(null);
   };
 
   return (
     <div className="flex min-h-dvh w-full flex-col gap-6 bg-background px-4 py-4 sm:px-6">
-      <div className="flex w-full flex-col gap-3 px-2 sm:flex-row sm:items-end sm:justify-between">
-        <Title
-          title="All Books"
-          description="Browse your entire book collection."
-        />
-        <AddBtn
-          handleClick={ handleClick}
+
+      <Header title="All Books" description="Browse your entire book collection." handleClick={handleClick} />
+
+
+      <div className="flex justify-between gap-4 px-2 ">
+        <BooksSearch search={search} setSearch={setSearch} />
+
+        <CategorySelector
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          categories={[]}
         />
       </div>
 
-      <BaseTable>
-        <>
-          <BooksSearch search={search} setSearch={setSearch} />
-          
-          <CategorySelector
-            selectedCategory={selectedCategory}
-            setSelectedCategory={setSelectedCategory}
-            categories={[]}
-          />
+      <BookFormDialog
+        key={`${isOpen ? "open" : "closed"}`}
+        open={isOpen}
+        onOpenChange={handleClick}
+        mode={editingBook ? "edit" : "create"}
+        initialBook={editingBook}
+        onSave={saveBook}
+      />
 
-          <BookFormDialog
-            key={`${editingBook?.id ?? "new-book"}-${isDialogOpen ? "open" : "closed"}`}
-            open={isDialogOpen}
-            onOpenChange={(nextOpen) => {
-              if (!nextOpen) {
-                setEditingBook(null);
-              }
-              setIsDialogOpen(nextOpen);
-            }}
-            mode={editingBook ? "edit" : "create"}
-            initialBook={editingBook}
-            onSave={saveBook}
-          />
-        </>
-      </BaseTable>
     </div>
   );
 }
