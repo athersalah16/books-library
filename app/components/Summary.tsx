@@ -6,8 +6,8 @@ type Props = {
 };
 
 function Summary({ books }: Props) {
-  const activeBooks = books.filter((book) => !book.deletedAt);
-  const deletedBooks = books.filter((book) => book.deletedAt);
+  const activeBooks = books;
+  const deletedBooks = books.filter((book) => book.is_deleted) ?? 0;
   const stats = {
     totalActive: activeBooks.length,
     totalCategories: new Set(activeBooks.map((book) => book.category)).size,
@@ -23,10 +23,10 @@ function Summary({ books }: Props) {
   ];
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-      {summary.map(({ name, icon:Icon, value }) => (
+      {summary.map(({ name, icon: Icon, value }) => (
         <div
           className="rounded-2xl border border-border bg-card p-4 shadow-sm"
-          key={     name}
+          key={name}
         >
           <div className="mb-3 inline-flex rounded-xl bg-primary/10 p-2 text-primary">
             <Icon size={20} />
