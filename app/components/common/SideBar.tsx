@@ -41,7 +41,7 @@ function SideBar() {
 
       <ul className="flex flex-col gap-1 px-4 py-5 justify-start ">
         {navigation.map(({ href, label, icon: Icon }) => (
-          <li key={href}>
+        
             <Link
               href={href}
               aria-label={label}
@@ -52,7 +52,6 @@ function SideBar() {
               <Icon aria-hidden="true" className="size-5 shrink-0" />
               <span>{label}</span>
             </Link>
-          </li>
         ))}
 
       </ul>
