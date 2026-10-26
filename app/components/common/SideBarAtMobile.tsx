@@ -2,10 +2,12 @@
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import SideBar from "./SideBar";
-import { UserButton } from "@clerk/nextjs";
+import {  useUser } from "@clerk/nextjs";
 
 function HeaderAtMobile() {
   const [isOpen, setIsOpen] = useState(false);
+      const { isSignedIn } = useUser();
+
   const handleClick = () => {
     setIsOpen(!isOpen);
   };
@@ -23,7 +25,6 @@ function HeaderAtMobile() {
       {isOpen && (
         <div className="md:hidden">
           <SideBar />
-          <UserButton showName/>
         </div>
       )}
     </>

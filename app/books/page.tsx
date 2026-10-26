@@ -39,7 +39,7 @@ function BooksPage() {
           categories={categories}
         />
       </div>
-      <div className="w-full grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4 ">
+      <div className="w-full grid lg:grid-cols-4 grid-cols-2  gap-4 ">
         {books.map((book, index) => (
           <DisplayBook data={book} key={index + 1} />
         ))}

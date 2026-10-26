@@ -20,7 +20,7 @@ function Header({ title, description, handleClick }: Props) {
                     description={description}
                 />
             </div>
-            <div>
+            <div className='hidden md:flex'>
                 {isSignedIn ?
                     <div className='flex flex-row gap-2 justify-center'>
                         <AddBtn handleClick={handleClick} />
