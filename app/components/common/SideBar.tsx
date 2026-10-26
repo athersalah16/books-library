@@ -40,13 +40,14 @@ function SideBar() {
       </div>
 
       <ul className="flex flex-col gap-1 px-4 py-5 justify-start ">
-        {navigation.map(({ href, label, icon: Icon }) => (
+        {navigation.map(({ href, label, icon: Icon }, index) => (
 
           <Link
+            key={index + 1}
             href={href}
             aria-label={label}
             className={`flex h-11 items-center justify-center gap-3 rounded-lg px-3 
-                  ${pathname === href ? "bg-sidebar-accent text-sidebar-accent-foreground font-semibold text-xl" : " text-md  font-medium etext-sidebar-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"}
+                  ${pathname === href ? "bg-sidebar-accent text-sidebar-accent-foreground font-semibold text-xl" : " text-md  font-medium text-sidebar-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"}
                    sm:justify-start`}
           >
             <Icon aria-hidden="true" className="size-5 shrink-0" />

@@ -15,7 +15,7 @@ function CategorySelector({ selectedCategory, setSelectedCategory, categories }:
         <DropdownMenuTrigger
           render={<Button variant="default" size="lg" className="w-40" />}
         >
-        <ChevronDown size={16}/>  Filter By Category
+        Filter By Category   <ChevronDown size={16}/>
 
         </DropdownMenuTrigger>
         <DropdownMenuContent className={`max-w-lg`}>
