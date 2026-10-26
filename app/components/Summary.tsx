@@ -1,25 +1,17 @@
+'use client'
 import { BookOpen, Library, Plus, Trash2 } from "lucide-react";
 import type { Book } from "@/app/types/book";
+import { useBooksContext } from "../context/BooksContext";
 
-type Props = {
-  books: Book[];
-};
 
-function Summary({ books }: Props) {
-  const activeBooks = books;
-  const deletedBooks = books.filter((book) => book.is_deleted) ?? 0;
-  const stats = {
-    totalActive: activeBooks.length,
-    totalCategories: new Set(activeBooks.map((book) => book.category)).size,
-    totalLocations: new Set(activeBooks.map((book) => book.location)).size,
-    totalDeleted: deletedBooks.length,
-  };
+function Summary() {
+ const {status} = useBooksContext()
 
   const summary = [
-    { name: "Active books", icon: Library, value: stats.totalActive },
-    { name: "Categories", icon: BookOpen, value: stats.totalCategories },
-    { name: "Locations", icon: Plus, value: stats.totalLocations },
-    { name: "In trash", icon: Trash2, value: stats.totalDeleted },
+    { name: "Active books", icon: Library, value: status.totalActive },
+    { name: "Categories", icon: BookOpen, value: status.totalCategories },
+    { name: "Locations", icon: Plus, value: status.totalLocations },
+    { name: "In trash", icon: Trash2, value: status.totalDeleted },
   ];
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">

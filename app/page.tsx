@@ -17,14 +17,13 @@ export default function Home() {
     <div className="flex min-h-dvh w-full flex-col gap-6 bg-background px-4 py-4 ">
       <Header title="Dashboard" description="Your collection at a glance." handleClick={handleClick}/>
 
-      <Summary books={books} />
+      <Summary  />
 
       <BookFormDialog
         key={isOpen ? "dashboard-create-open" : "dashboard-create-closed"}
         open={isOpen}
         onOpenChange={setIsOpen}
         mode="create"
-        onSave={handleSave}
       />
     </div>
   );

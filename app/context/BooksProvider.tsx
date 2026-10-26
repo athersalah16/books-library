@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Book } from "../types/book";
 import { addBook } from "../lib/addBook";
 import { getBooks } from "../lib/getBooks";
+import CategorySelector from './../books/components/CategorySelector';
 
 type Props = {
   children: React.ReactNode;
@@ -14,11 +15,19 @@ type Props = {
 function BooksProvider({ children }: Props) {
   const [books, setBooks] = useState<Book[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+ 
+  const deletedBooks = books.filter((book) => book.is_deleted) ?? 0;
+  const categories = books.map((book) => book.category)
+  const status = {
+    totalActive: books.length,
+    totalCategories: new Set(categories).size,
+    totalLocations: new Set(books.map((book) => book.location)).size,
+    totalDeleted: deletedBooks.length,
+  };
 
   useEffect(() => {
     const fetchBooks = async () => {
       const books = await getBooks()
-
       setBooks(books);
     };
 
@@ -35,11 +44,12 @@ function BooksProvider({ children }: Props) {
 
     const createdBook = await addBook(values);
     setBooks((currentBooks) => [...currentBooks, createdBook]);
-    toast.success(`"${createdBook.title}" was added to your inventory.`);
+    toast.success(`${createdBook.title} was added to your inventory.`);
+    return true
   };
 
   return (
-    <BooksContext.Provider value={{ books, handleSave, isOpen, setIsOpen }}>
+    <BooksContext.Provider value={{ books, handleSave, isOpen, setIsOpen ,status,categories}}>
       {children}
     </BooksContext.Provider>
   );

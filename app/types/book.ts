@@ -1,5 +1,4 @@
 export interface Book {
-  user_id: string;
   title: string;
   category: string;
   author: string;
@@ -9,6 +8,7 @@ export interface Book {
   created_at: string;
   updated_at: string;
   is_deleted: boolean;
+  image_url?: string
 }
 
 export type BookFormValues = {
@@ -24,7 +24,6 @@ export type BookFormDialogProps = {
   onOpenChange: (value: boolean) => void;
   mode: "create" | "edit";
   initialBook?: Book | null;
-  onSave: (values: BookFormValues) => Promise<void> | void;
 };
 
 export type BooksFields = {

@@ -2,7 +2,6 @@
 
 import { createConnection } from "./createConnection";
 import { Book, BookFormValues } from "../types/book";
-
 export async function addBook(newBook: BookFormValues): Promise<Book> {
   const supabase = await createConnection();
 
@@ -13,8 +12,11 @@ export async function addBook(newBook: BookFormValues): Promise<Book> {
     .single();
 
   if (error) {
-    throw new Error(`${error.code} ,${error.message},${error.details}`);
+    throw new Error(`${error.code} ,${error.message},${error.details},${error.hint},${error.stack}`);
   }
 
   return data;
 }
+
+
+
