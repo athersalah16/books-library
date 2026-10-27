@@ -22,9 +22,11 @@ import {
   Archive,
   UserRound,
   Pen,
+  ArchiveRestore,
 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { useBooksContext } from "@/app/context/BooksContext";
 
 type Props = {
   data: Book;
@@ -33,42 +35,36 @@ type Props = {
 };
 
 function BookInformation({ data, open, onOpenChange }: Props) {
-  const {
-    image_url,
-    title,
-    author,
-    category,
-    shelf_number,
-    location,
-    language,
-    is_deleted,
-    created_at,
-    updated_at,
-  } = data;
+  const { id, image_url, title } = data;
+  const { handleMoveToTrash } = useBooksContext();
+
   const displayData = [
     { label: "Title", value: title, icon: BookOpen },
-    { label: "Author", value: author, icon: UserRound },
-    { label: "Category", value: category, icon: Tags },
-    { label: "Language", value: language, icon: Languages },
-    { label: "Location", value: location, icon: MapPin },
-    { label: "Shelf number", value: shelf_number, icon: Hash },
+    { label: "Author", value: data.author, icon: UserRound },
+    { label: "Category", value: data.category, icon: Tags },
+    { label: "Language", value: data.language, icon: Languages },
+    { label: "Location", value: data.location, icon: MapPin },
+    { label: "Shelf number", value: data.shelf_number, icon: Hash },
     {
       label: "Added to library",
-      value: new Date(created_at).toLocaleString(),
+      value: new Date(data.created_at).toLocaleString(),
       icon: CalendarDays,
     },
     {
       label: "Last updated",
-      value: new Date(updated_at).toLocaleString(),
+      value: new Date(data.updated_at).toLocaleString(),
       icon: Clock3,
     },
     {
       label: "Status",
-      value: is_deleted ? "In trash" : "In library",
-      icon: is_deleted ? Trash2 : Archive,
+      value: data.is_deleted ? "In trash" : "In library",
+      icon: data.is_deleted ? Trash2 : Archive,
     },
   ];
-  const handleMoveToTrah = () => {};
+  const handleTrash = async () => {
+    await handleMoveToTrash(id, !data.is_deleted);
+  };
+
   const handleEdit = () => {};
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -117,7 +113,7 @@ function BookInformation({ data, open, onOpenChange }: Props) {
                     />
                     {label}
                   </dt>
-                  <dd className="break-words text-sm font-semibold text-foreground">
+                  <dd className="wrap-break-word text-sm font-semibold text-foreground">
                     {value || "Not provided"}
                   </dd>
                 </div>
@@ -127,10 +123,21 @@ function BookInformation({ data, open, onOpenChange }: Props) {
         </div>
 
         <AlertDialogFooter className="mx-0 mb-0 rounded-b-2xl px-5 py-4 sm:px-7">
-          <Button onClick={handleMoveToTrah} variant="destructive">
-            <Trash2 /> Move to trash
+          <Button
+            onClick={handleTrash}
+            variant={data.is_deleted ? "outline" : "destructive"}
+          >
+            {data.is_deleted ? (
+              <>
+                <ArchiveRestore /> Restore
+              </>
+            ) : (
+              <>
+                <Trash2 /> Move to trash
+              </>
+            )}
           </Button>
-          <Button onClick={handleMoveToTrah} variant="default">
+          <Button onClick={handleEdit} variant="default">
             <Pen />
             Edit Book
           </Button>

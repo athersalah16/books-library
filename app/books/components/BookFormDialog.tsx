@@ -13,18 +13,18 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
-import { Book, BookFormDialogProps, BookFormValues, BooksFields } from "@/app/types/book";
+import {
+  Book,
+  BookFormDialogProps,
+  BookFormValues,
+  BooksFields,
+} from "@/app/types/book";
 import { validateData } from "@/app/utils/validateData";
 import { useBooksContext } from "@/app/context/BooksContext";
 import { uploadBookCover } from "@/app/lib/uploadBookCover";
+import CategorySelector from "./CategorySelector";
 
-function BookFormDialog({
-  open,
-  onOpenChange,
-  mode,
-
-
-}: BookFormDialogProps) {
+function BookFormDialog({ open, onOpenChange, mode }: BookFormDialogProps) {
   const [formValues, setFormValues] = useState<BookFormValues>({
     title: "",
     category: "",
@@ -32,18 +32,17 @@ function BookFormDialog({
     author: "",
     shelf_number: "",
     language: "",
-
   });
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
-  const { handleSave } = useBooksContext();
+  const { handleSave, selectedCategory } = useBooksContext();
 
   const fields: BooksFields[] = [
     { name: "title", label: "Title", placeholder: "Enter a book title" },
     { name: "author", label: "Author", placeholder: "Enter the author name" },
-    { name: "category", label: "Category", placeholder: "e.g. Fiction" },
+    //{ name: "category", label: "Category", placeholder: "e.g. Fiction" },
     { name: "language", label: "Language", placeholder: "e.g. English" },
     { name: "shelf_number", label: "Shelf number", placeholder: "e.g. A-12" },
     { name: "location", label: "Location", placeholder: "e.g. Main Shelf A" },
@@ -57,7 +56,6 @@ function BookFormDialog({
 
   const handleFieldChange = (field: keyof BookFormValues, value: string) => {
     setFormValues((current) => ({ ...current, [field]: value }));
-
   };
 
   const handleCoverChange = (file: File | undefined) => {
@@ -88,10 +86,11 @@ function BookFormDialog({
 
       const newBook: Book = {
         ...formValues,
+        category: selectedCategory,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         is_deleted: false,
-        image_url: imageUrl || '',
+        image_url: imageUrl || "",
       };
 
       const addBook = await handleSave(newBook);
@@ -100,7 +99,7 @@ function BookFormDialog({
       setError(
         submitError instanceof Error
           ? submitError.message
-          : "Unable to save the book. Please try again."
+          : "Unable to save the book. Please try again.",
       );
     } finally {
       setIsSubmitting(false);
@@ -109,8 +108,10 @@ function BookFormDialog({
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="w-[calc(100%-2rem)] max-w-2xl
-    max-h-[90dvh] overflow-y-auto rounded-2xl border border-border bg-card shadow-dialog">
+      <AlertDialogContent
+        className="w-[calc(100%-2rem)] max-w-2xl
+    max-h-[90dvh] overflow-y-auto rounded-2xl border border-border bg-card shadow-dialog"
+      >
         <AlertDialogHeader className="items-start text-left">
           <span className="mb-2 inline-flex size-11 items-center justify-center rounded-xl bg-brass-soft text-primary">
             <Image src={"/logo.png"} alt="Logo" width={44} height={44} />
@@ -128,34 +129,50 @@ function BookFormDialog({
         </AlertDialogHeader>
 
         <form id="book-form" onSubmit={handleSubmit} className="space-y-4">
-          {fields.slice(0, 2).map(({ name, label, placeholder }) => (
-            <label key={name} className="flex flex-col gap-2 text-sm font-medium text-foreground">
+          {fields.slice(0, 1).map(({ name, label, placeholder }) => (
+            <label
+              key={name}
+              className="flex flex-col gap-2 text-sm font-medium text-foreground"
+            >
               {label}
               <Input
                 id={`book-${name}`}
                 value={formValues[name]}
-                onChange={(event) => handleFieldChange(name, event.target.value)}
+                onChange={(event) =>
+                  handleFieldChange(name, event.target.value)
+                }
                 placeholder={placeholder}
               />
             </label>
           ))}
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {fields.slice(2).map(({ name, label, placeholder }) => (
-              <label key={name} className="flex flex-col gap-2 text-sm font-medium text-foreground">
+            {fields.slice(1).map(({ name, label, placeholder }) => (
+              <label
+                key={name}
+                className="flex flex-col gap-2 text-sm font-medium text-foreground"
+              >
                 {label}
                 <Input
                   id={`book-${name}`}
                   value={formValues[name]}
-                  onChange={(event) => handleFieldChange(name, event.target.value)}
+                  onChange={(event) =>
+                    handleFieldChange(name, event.target.value)
+                  }
                   placeholder={placeholder}
                 />
               </label>
             ))}
           </div>
+          <div className="w-full">
+            <CategorySelector mode="add" />
+          </div>
 
           <section className="space-y-3 rounded-xl border border-border p-3">
-            <label htmlFor="book-cover" className="flex flex-col gap-2 text-sm font-medium text-foreground">
+            <label
+              htmlFor="book-cover"
+              className="flex flex-col gap-2 text-sm font-medium text-foreground"
+            >
               Cover image
               <Input
                 id="book-cover"
@@ -174,7 +191,9 @@ function BookFormDialog({
                   unoptimized
                   className="rounded-md object-cover"
                 />
-                <span className="text-sm text-muted-foreground">{coverFile?.name}</span>
+                <span className="text-sm text-muted-foreground">
+                  {coverFile?.name}
+                </span>
               </div>
             )}
           </section>
@@ -200,7 +219,7 @@ function BookFormDialog({
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
-    </AlertDialog >
+    </AlertDialog>
   );
 }
 

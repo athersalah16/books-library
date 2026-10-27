@@ -1,12 +1,11 @@
-
-'use client'
+"use client";
 import React, { useEffect, useState } from "react";
 import { BooksContext } from "./BooksContext";
 import { toast } from "sonner";
 import { Book } from "../types/book";
 import { addBook } from "../lib/addBook";
 import { getBooks } from "../lib/getBooks";
-import CategorySelector from './../books/components/CategorySelector';
+import { moveToTrash } from "../lib/moveToTrash";
 
 type Props = {
   children: React.ReactNode;
@@ -14,30 +13,31 @@ type Props = {
 
 function BooksProvider({ children }: Props) {
   const [books, setBooks] = useState<Book[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [isOpen, setIsOpen] = useState(false);
- 
+
   const deletedBooks = books.filter((book) => book.is_deleted) ?? 0;
-  const categories = books.map((book) => book.category)
   const status = {
     totalActive: books.length,
-    totalCategories: new Set(categories).size,
     totalLocations: new Set(books.map((book) => book.location)).size,
     totalDeleted: deletedBooks.length,
   };
 
   useEffect(() => {
     const fetchBooks = async () => {
-      const books = await getBooks()
+      const books = await getBooks();
       setBooks(books);
     };
 
     fetchBooks().catch((error) => {
-      console.error(error);
       toast.error("Unable to load books.");
     });
   }, []);
 
-  const handleSave = async (values: Parameters<typeof addBook>[0], bookId?: string) => {
+  const handleSave = async (
+    values: Parameters<typeof addBook>[0],
+    bookId?: string,
+  ) => {
     if (bookId) {
       throw new Error("Editing books is not implemented yet.");
     }
@@ -45,11 +45,41 @@ function BooksProvider({ children }: Props) {
     const createdBook = await addBook(values);
     setBooks((currentBooks) => [...currentBooks, createdBook]);
     toast.success(`${createdBook.title} was added to your inventory.`);
-    return true
+    return true;
+  };
+
+  const handleMoveToTrash = async (id: string, value: boolean) => {
+    try {
+      const trashedBook = await moveToTrash(id, value);
+
+      if (trashedBook) {
+        setBooks((prevBooks) =>
+          prevBooks.map((book) =>
+            book.id === id ? { ...book, is_deleted: value } : book,
+          ),
+        );
+        toast.success(
+          `${value ? "Book Moved To Trash" : "Book restored from Trash"}`,
+        );
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : String(error));
+    }
   };
 
   return (
-    <BooksContext.Provider value={{ books, handleSave, isOpen, setIsOpen ,status,categories}}>
+    <BooksContext.Provider
+      value={{
+        books,
+        handleSave,
+        handleMoveToTrash,
+        isOpen,
+        setIsOpen,
+        status,
+        selectedCategory,
+        setSelectedCategory,
+      }}
+    >
       {children}
     </BooksContext.Provider>
   );

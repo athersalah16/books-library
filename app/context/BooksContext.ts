@@ -4,7 +4,6 @@ import { Book, BookFormValues } from "../types/book";
 
 type Status = {
   totalActive: number;
-  totalCategories: number;
   totalLocations: number;
   totalDeleted: number;
 };
@@ -12,10 +11,12 @@ type Status = {
 type BooksContextType = {
   books: Book[];
   handleSave: (values: BookFormValues, bookId?: string) => Promise<boolean>;
+ handleMoveToTrash: (id: string,value:boolean) => Promise<void>
   isOpen: boolean;
   status: Status;
-  categories: string[];
   setIsOpen: (isOpen: boolean) => void;
+  setSelectedCategory: React.Dispatch<React.SetStateAction<string>>;
+  selectedCategory: string;
 };
 
 export const BooksContext = createContext<BooksContextType | undefined>(

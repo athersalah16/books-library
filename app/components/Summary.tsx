@@ -9,7 +9,6 @@ function Summary() {
 
   const summary = [
     { name: "Active books", icon: Library, value: status.totalActive },
-    { name: "Categories", icon: BookOpen, value: status.totalCategories },
     { name: "Locations", icon: Plus, value: status.totalLocations },
     { name: "In trash", icon: Trash2, value: status.totalDeleted },
   ];

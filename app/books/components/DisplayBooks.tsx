@@ -1,7 +1,7 @@
-"";
+"use client";
 import { Book } from "@/app/types/book";
 import Image from "next/image";
-import { useState } from "react";
+import {  useState } from "react";
 import { BookOpen } from "lucide-react";
 import BookInformation from "./BookInformation";
 
@@ -11,6 +11,7 @@ function DisplayBook({ data }: Props) {
   const { image_url, title, category, shelf_number, location } = data;
   const [open, setOpen] = useState(false);
 
+  
   const handleClick = () => {
     setOpen((current) => !current);
   };
