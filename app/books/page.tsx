@@ -12,7 +12,7 @@ import DisplayBooks from "./components/DisplayBooks";
 import NoBooksFound from "../components/common/NoBooksFound";
 
 function BooksPage() {
-  const { books, isOpen, handleSave, setIsOpen } = useBooksContext();
+  const { unTrashedBooks, isOpen, handleSave, setIsOpen } = useBooksContext();
   const [search, setSearch] = useState("");
   const [editingBook, setEditingBook] = useState<Book | null>(null);
 
@@ -31,7 +31,7 @@ function BooksPage() {
         description="Browse your entire book collection."
         handleClick={handleClick}
       />
-      {books.length === 0 ? (
+      {unTrashedBooks.length === 0 ? (
         <NoBooksFound />
       ) : (
         <>
@@ -41,7 +41,7 @@ function BooksPage() {
             <CategorySelector />
           </div>
           <div className="w-full grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1  gap-4 ">
-            {books.map((book, index) => (
+            {unTrashedBooks.map((book, index) => (
               <DisplayBooks data={book} key={index + 1} />
             ))}
           </div>

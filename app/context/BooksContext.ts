@@ -10,6 +10,8 @@ type Status = {
 
 type BooksContextType = {
   books: Book[];
+  unTrashedBooks:Book[]
+  trashedBooks:Book[]
   handleSave: (values: BookFormValues, bookId?: string) => Promise<boolean>;
  handleMoveToTrash: (id: string,value:boolean) => Promise<void>
   isOpen: boolean;

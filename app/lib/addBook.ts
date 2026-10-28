@@ -11,12 +11,12 @@ export async function addBook(newBook: BookFormValues): Promise<Book> {
     .select("*")
     .single();
 
+  if (error?.code === "23505") {
+    throw new Error("A book with this title already exists.");
+  }
   if (error) {
-    throw new Error(`${error.code} ,${error.message},${error.details},${error.hint},${error.stack}`);
+    throw new Error(error.message);
   }
 
   return data;
 }
-
-
-

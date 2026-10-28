@@ -41,7 +41,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
        
               {children}
             </main>
-            <Toaster />
+            <Toaster position="top-center" />
           </BooksProvider>
         </ClerkProvider>
       </body>

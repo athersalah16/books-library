@@ -13,14 +13,15 @@ type Props = {
 
 function BooksProvider({ children }: Props) {
   const [books, setBooks] = useState<Book[]>([]);
+  const unTrashedBooks = books.filter((book) => !book.is_deleted);
+  const trashedBooks = books.filter((book) => book.is_deleted);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [isOpen, setIsOpen] = useState(false);
 
-  const deletedBooks = books.filter((book) => book.is_deleted) ?? 0;
   const status = {
     totalActive: books.length,
     totalLocations: new Set(books.map((book) => book.location)).size,
-    totalDeleted: deletedBooks.length,
+    totalDeleted: trashedBooks.length ?? 0,
   };
 
   useEffect(() => {
@@ -66,11 +67,12 @@ function BooksProvider({ children }: Props) {
       toast.error(error instanceof Error ? error.message : String(error));
     }
   };
-
   return (
     <BooksContext.Provider
       value={{
         books,
+        trashedBooks,
+        unTrashedBooks,
         handleSave,
         handleMoveToTrash,
         isOpen,

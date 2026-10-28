@@ -27,6 +27,7 @@ import {
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useBooksContext } from "@/app/context/BooksContext";
+import { useState } from "react";
 
 type Props = {
   data: Book;
@@ -36,7 +37,9 @@ type Props = {
 
 function BookInformation({ data, open, onOpenChange }: Props) {
   const { id, image_url, title } = data;
-  const { handleMoveToTrash } = useBooksContext();
+  const { handleMoveToTrash } = useBooksContext(); 
+  // const [open, setOpen] = useState(false);
+
 
   const displayData = [
     { label: "Title", value: title, icon: BookOpen },
@@ -62,10 +65,14 @@ function BookInformation({ data, open, onOpenChange }: Props) {
     },
   ];
   const handleTrash = async () => {
-    await handleMoveToTrash(id, !data.is_deleted);
+    await handleMoveToTrash(id!, !data.is_deleted); 
+    onOpenChange(false)
   };
 
-  const handleEdit = () => {};
+  const handleEdit = () => {
+    onOpenChange(false)
+    //setOpen(true)
+  };
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent className="w-[calc(100%-2rem)] max-w-3xl max-h-[90dvh] gap-0 overflow-y-auto rounded-2xl border border-border bg-card p-0 shadow-dialog">

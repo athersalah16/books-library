@@ -9,7 +9,7 @@ import Link from "next/link";
 import NoBooksFound from "./components/common/NoBooksFound";
 
 export default function Home() {
-  const { books, handleSave, isOpen, setIsOpen } = useBooksContext();
+  const { unTrashedBooks,  isOpen, setIsOpen } = useBooksContext();
 
   const handleClick = () => {
     setIsOpen(!isOpen);
@@ -25,7 +25,7 @@ export default function Home() {
         handleClick={handleClick}
       />
 
-      {books.length === 0 ? (
+      {unTrashedBooks.length === 0 ? (
            <NoBooksFound/>
       ) : (
         <>
@@ -42,7 +42,7 @@ export default function Home() {
               </Link>
             </div>
             <div className="w-full grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1  gap-4 ">
-              {books.slice(-4).map((book, index) => (
+              {unTrashedBooks.slice(-4).map((book, index) => (
                 <DisplayBooks data={book} key={index + 1} />
               ))}
             </div>

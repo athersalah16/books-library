@@ -96,6 +96,7 @@ function BookFormDialog({ open, onOpenChange, mode }: BookFormDialogProps) {
       const addBook = await handleSave(newBook);
       if (addBook) onOpenChange(!open);
     } catch (submitError) {
+ 
       setError(
         submitError instanceof Error
           ? submitError.message
