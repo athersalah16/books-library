@@ -14,6 +14,7 @@ type BooksContextType = {
   trashedBooks:Book[]
   handleSave: (values: BookFormValues, bookId?: string) => Promise<boolean>;
  handleMoveToTrash: (id: string,value:boolean) => Promise<void>
+ handleDelete: (id: string) => Promise<void>
   isOpen: boolean;
   status: Status;
   setIsOpen: (isOpen: boolean) => void;

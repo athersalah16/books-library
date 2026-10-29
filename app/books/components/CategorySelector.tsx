@@ -10,8 +10,18 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
 
-function CategorySelector({ mode }: { mode?: string }) {
-  const { selectedCategory, setSelectedCategory } = useBooksContext();
+function CategorySelector({
+  mode,
+  value,
+  onValueChange,
+}: {
+  mode?: string;
+  value?: string;
+  onValueChange?: (value: string) => void;
+}) {
+  const context = useBooksContext();
+  const selectedCategory = value ?? context.selectedCategory;
+  const setSelectedCategory = onValueChange ?? context.setSelectedCategory;
   const categories: string[] = [
     "القرآن الكريم وعلومه",
     "التفسير",

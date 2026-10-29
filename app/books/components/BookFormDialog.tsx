@@ -24,25 +24,32 @@ import { useBooksContext } from "@/app/context/BooksContext";
 import { uploadBookCover } from "@/app/lib/uploadBookCover";
 import CategorySelector from "./CategorySelector";
 
-function BookFormDialog({ open, onOpenChange, mode }: BookFormDialogProps) {
-  const [formValues, setFormValues] = useState<BookFormValues>({
-    title: "",
-    category: "",
-    location: "",
-    author: "",
-    shelf_number: "",
-    language: "",
-  });
+function BookFormDialog({
+  open,
+  onOpenChange,
+  mode,
+  initialBook,
+}: BookFormDialogProps) {
+  const [formValues, setFormValues] = useState<BookFormValues>(() => ({
+    title: initialBook?.title ?? "",
+    category: initialBook?.category ?? "",
+    location: initialBook?.location ?? "",
+    author: initialBook?.author ?? "",
+    shelf_number: initialBook?.shelf_number ?? "",
+    language: initialBook?.language ?? "",
+  }));
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [coverFile, setCoverFile] = useState<File | null>(null);
-  const [coverPreview, setCoverPreview] = useState<string | null>(null);
-  const { handleSave, selectedCategory } = useBooksContext();
+  const [coverPreview, setCoverPreview] = useState<string | null>(
+    initialBook?.image_url ?? null,
+  );
+  const { handleSave, selectedCategory, setSelectedCategory } =
+    useBooksContext();
 
   const fields: BooksFields[] = [
     { name: "title", label: "Title", placeholder: "Enter a book title" },
     { name: "author", label: "Author", placeholder: "Enter the author name" },
-    //{ name: "category", label: "Category", placeholder: "e.g. Fiction" },
     { name: "language", label: "Language", placeholder: "e.g. English" },
     { name: "shelf_number", label: "Shelf number", placeholder: "e.g. A-12" },
     { name: "location", label: "Location", placeholder: "e.g. Main Shelf A" },
@@ -84,19 +91,21 @@ function BookFormDialog({ open, onOpenChange, mode }: BookFormDialogProps) {
         imageUrl = await uploadBookCover(coverFileFromFormData);
       }
 
+      const categoryValue =
+        mode === "edit" ? formValues.category : selectedCategory || formValues.category;
+
       const newBook: Book = {
         ...formValues,
-        category: selectedCategory,
-        created_at: new Date().toISOString(),
+        category: categoryValue,
+        created_at: initialBook?.created_at ?? new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        is_deleted: false,
-        image_url: imageUrl || "",
+        is_deleted: initialBook?.is_deleted ?? false,
+        image_url: imageUrl || initialBook?.image_url || "",
       };
 
-      const addBook = await handleSave(newBook);
-      if (addBook) onOpenChange(!open);
+      const saved = await handleSave(newBook, initialBook?.id);
+      if (saved) onOpenChange(false);
     } catch (submitError) {
- 
       setError(
         submitError instanceof Error
           ? submitError.message
@@ -166,7 +175,16 @@ function BookFormDialog({ open, onOpenChange, mode }: BookFormDialogProps) {
             ))}
           </div>
           <div className="w-full">
-            <CategorySelector mode="add" />
+            <CategorySelector
+              mode="add"
+              value={mode === "edit" ? formValues.category : selectedCategory}
+              onValueChange={(category) => {
+                setFormValues((current) => ({ ...current, category }));
+                if (mode === "create") {
+                  setSelectedCategory(category);
+                }
+              }}
+            />
           </div>
 
           <section className="space-y-3 rounded-xl border border-border p-3">

@@ -12,18 +12,13 @@ import DisplayBooks from "./components/DisplayBooks";
 import NoBooksFound from "../components/common/NoBooksFound";
 
 function BooksPage() {
-  const { unTrashedBooks, isOpen, handleSave, setIsOpen } = useBooksContext();
+  const { unTrashedBooks, isOpen, setIsOpen } = useBooksContext();
   const [search, setSearch] = useState("");
-  const [editingBook, setEditingBook] = useState<Book | null>(null);
-
   const handleClick = () => {
     setIsOpen(!isOpen);
   };
 
-  const saveBook = async (values: Parameters<typeof handleSave>[0]) => {
-    // await handleSave(values, editingBook?.id);
-    setEditingBook(null);
-  };
+
   return (
     <div className="flex min-h-dvh w-full flex-col gap-6 bg-background px-4 py-4 sm:px-6">
       <Header
@@ -52,8 +47,8 @@ function BooksPage() {
         key={`${isOpen ? "open" : "closed"}`}
         open={isOpen}
         onOpenChange={handleClick}
-        mode={editingBook ? "edit" : "create"}
-        initialBook={editingBook}
+        mode={ "create"}
+ 
       />
     </div>
   );

@@ -6,6 +6,8 @@ import { Book } from "../types/book";
 import { addBook } from "../lib/addBook";
 import { getBooks } from "../lib/getBooks";
 import { moveToTrash } from "../lib/moveToTrash";
+import { deleteBook } from "../lib/deleteBook";
+import { updateBook } from "../lib/updateBook";
 
 type Props = {
   children: React.ReactNode;
@@ -30,7 +32,7 @@ function BooksProvider({ children }: Props) {
       setBooks(books);
     };
 
-    fetchBooks().catch((error) => {
+    fetchBooks().catch(() => {
       toast.error("Unable to load books.");
     });
   }, []);
@@ -40,7 +42,14 @@ function BooksProvider({ children }: Props) {
     bookId?: string,
   ) => {
     if (bookId) {
-      throw new Error("Editing books is not implemented yet.");
+      const updatedBook = await updateBook(bookId, values);
+      setBooks((currentBooks) =>
+        currentBooks.map((book) =>
+          book.id === bookId ? { ...book, ...updatedBook } : book,
+        ),
+      );
+      toast.success(`${updatedBook.title} was updated.`);
+      return true;
     }
 
     const createdBook = await addBook(values);
@@ -67,6 +76,18 @@ function BooksProvider({ children }: Props) {
       toast.error(error instanceof Error ? error.message : String(error));
     }
   };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteBook(id);
+
+      setBooks((prevBooks) => prevBooks.filter((book) => book.id !== id));
+      toast.success("Book Deleted Successfully");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : String(error));
+    }
+  };
+
   return (
     <BooksContext.Provider
       value={{
@@ -74,7 +95,7 @@ function BooksProvider({ children }: Props) {
         trashedBooks,
         unTrashedBooks,
         handleSave,
-        handleMoveToTrash,
+        handleMoveToTrash,handleDelete,
         isOpen,
         setIsOpen,
         status,
