@@ -10,7 +10,7 @@ type Props = { data: Book; inTrashed?: boolean };
 
 function DisplayBooks({ data, inTrashed = false }: Props) {
   const { image_url, title, category, shelf_number, location, id } = data;
-  const { handleMoveToTrash, handleDelete,isOpen,setIsOpen } = useBooksContext();
+  const { handleMoveToTrash, handleDelete } = useBooksContext();
   const router = useRouter();
 
   const handleClick = () => {

@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import BookFormDialog from "@/app/books/components/BookFormDialog";
-import { Book } from "@/app/types/book";
 import BooksSearch from "./components/BooksSearch";
 import CategorySelector from "./components/CategorySelector";
 import { useBooksContext } from "../context/BooksContext";
@@ -12,11 +10,9 @@ import DisplayBooks from "./components/DisplayBooks";
 import NoBooksFound from "../components/common/NoBooksFound";
 
 function BooksPage() {
-  const { unTrashedBooks, isOpen, setIsOpen } = useBooksContext();
+  const { unTrashedBooks} = useBooksContext();
   const [search, setSearch] = useState("");
-  const handleClick = () => {
-    setIsOpen(!isOpen);
-  };
+  
 
 
   return (
@@ -24,7 +20,6 @@ function BooksPage() {
       <Header
         title="All Books"
         description="Browse your entire book collection."
-        handleClick={handleClick}
       />
       {unTrashedBooks.length === 0 ? (
         <NoBooksFound />
@@ -43,13 +38,7 @@ function BooksPage() {
         </>
       )}
 
-      <BookFormDialog
-        key={`${isOpen ? "open" : "closed"}`}
-        open={isOpen}
-        onOpenChange={handleClick}
-        mode={ "create"}
- 
-      />
+     
     </div>
   );
 }

@@ -1,20 +1,22 @@
+'use client'
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-type Props = {
-  handleClick: () => void;
-};
-
-function AddBtn({ handleClick }: Props  ) {
+function AddBtn() {
+  const router = useRouter()
+  const handleClick = () => {
+    router.push('/books/new')
+  };
   return (
-    <DropdownMenu >
+    <DropdownMenu>
       <DropdownMenuTrigger
         render={<Button variant="default" size="lg" className="w-40" />}
       >
@@ -22,14 +24,13 @@ function AddBtn({ handleClick }: Props  ) {
       </DropdownMenuTrigger>
       <DropdownMenuContent className={`max-w-lg`}>
         <DropdownMenuGroup>
-          <DropdownMenuItem onClick={handleClick}>
-            Add Book Manually
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => console.log("Add Book With AI clicked")}>
+          <DropdownMenuItem onClick={handleClick}>Add Book Manually</DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => console.log("Add Book With AI clicked")}
+          >
             Add Book With AI
           </DropdownMenuItem>
         </DropdownMenuGroup>
-
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -1,6 +1,5 @@
 "use client";
 
-import BookFormDialog from "@/app/books/components/BookFormDialog";
 import Summary from "./components/Summary";
 import { useBooksContext } from "./context/BooksContext";
 import Header from "./components/common/Header";
@@ -9,11 +8,8 @@ import Link from "next/link";
 import NoBooksFound from "./components/common/NoBooksFound";
 
 export default function Home() {
-  const { unTrashedBooks,  isOpen, setIsOpen } = useBooksContext();
+  const { unTrashedBooks } = useBooksContext();
 
-  const handleClick = () => {
-    setIsOpen(!isOpen);
-  };
 
   
 
@@ -22,7 +18,6 @@ export default function Home() {
       <Header
         title="Dashboard"
         description="Your collection at a glance."
-        handleClick={handleClick}
       />
 
       {unTrashedBooks.length === 0 ? (
@@ -49,12 +44,7 @@ export default function Home() {
           </div>
         </>
       )}
-      <BookFormDialog
-        key={isOpen ? "dashboard-create-open" : "dashboard-create-closed"}
-        open={isOpen}
-        onOpenChange={setIsOpen}
-        mode="create"
-      />
+      
     </div>
   );
 }

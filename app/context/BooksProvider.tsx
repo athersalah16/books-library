@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { BooksContext } from "./BooksContext";
 import { toast } from "sonner";
-import { Book } from "../types/book";
+import { Book, BookFormValues } from "../types/book";
 import { addBook } from "../lib/addBook";
 import { getBooks } from "../lib/getBooks";
 import { moveToTrash } from "../lib/moveToTrash";
@@ -18,7 +18,6 @@ function BooksProvider({ children }: Props) {
   const unTrashedBooks = books.filter((book) => !book.is_deleted);
   const trashedBooks = books.filter((book) => book.is_deleted);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
-  const [isOpen, setIsOpen] = useState(false);
 
   const status = {
     totalActive: books.length,
@@ -38,9 +37,9 @@ function BooksProvider({ children }: Props) {
   }, []);
 
   const handleSave = async (
-    values: Parameters<typeof addBook>[0],
-    bookId?: string,
-  ) => {
+    values: BookFormValues | Book,
+    bookId: string = "",
+  ): Promise<boolean> => {
     if (bookId) {
       const updatedBook = await updateBook(bookId, values);
       setBooks((currentBooks) =>
@@ -96,8 +95,7 @@ function BooksProvider({ children }: Props) {
         unTrashedBooks,
         handleSave,
         handleMoveToTrash,handleDelete,
-        isOpen,
-        setIsOpen,
+      
         status,
         selectedCategory,
         setSelectedCategory,

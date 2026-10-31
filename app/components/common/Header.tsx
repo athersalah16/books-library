@@ -10,7 +10,7 @@ import AddBtn from './AddBtn';
 type Props = {
   title: string;
   description: string;
-  handleClick: () => void;
+  handleClick?: () => void;
 };
 
 function Header({ title, description, handleClick }: Props) {
@@ -25,7 +25,7 @@ function Header({ title, description, handleClick }: Props) {
       <div>
         {isSignedIn ? (
           <div className="flex  px-1 lg:flex-row lg:justify-center gap-2">
-            <AddBtn handleClick={handleClick} />
+            <AddBtn />
 
             <div className="hidden md:block">
               <UserButton showName />

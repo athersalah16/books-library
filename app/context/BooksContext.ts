@@ -10,14 +10,12 @@ type Status = {
 
 type BooksContextType = {
   books: Book[];
-  unTrashedBooks:Book[]
-  trashedBooks:Book[]
-  handleSave: (values: BookFormValues, bookId?: string) => Promise<boolean>;
- handleMoveToTrash: (id: string,value:boolean) => Promise<void>
- handleDelete: (id: string) => Promise<void>
-  isOpen: boolean;
+  unTrashedBooks: Book[];
+  trashedBooks: Book[];
+  handleSave: (values: BookFormValues | Book, bookId?: string) => Promise<boolean>;
+  handleMoveToTrash: (id: string, value: boolean) => Promise<void>;
+  handleDelete: (id: string) => Promise<void>;
   status: Status;
-  setIsOpen: (isOpen: boolean) => void;
   setSelectedCategory: React.Dispatch<React.SetStateAction<string>>;
   selectedCategory: string;
 };

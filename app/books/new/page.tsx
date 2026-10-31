@@ -1,49 +1,28 @@
 "use client";
-import { useEffect, useState, FormEvent } from "react";
-import { AlertTriangle } from "lucide-react";
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+
+import { FormEvent, useEffect, useRef, useState } from "react";
+import { AlertTriangle, X } from "lucide-react";
+import Image from "next/image";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Image from "next/image";
-import {
-  Book,
-  BookFormDialogProps,
-  BookFormValues,
-  BooksFields,
-} from "@/app/types/book";
+import { Book, BookFormValues, BooksFields } from "@/app/types/book";
 import { validateData } from "@/app/utils/validateData";
 import { useBooksContext } from "@/app/context/BooksContext";
-import { uploadBookCover } from "@/app/lib/uploadBookCover";
-import CategorySelector from "./CategorySelector";
+import CategorySelector from "../components/CategorySelector";
+import { createImageUrl } from "@/app/utils/createImageUrl";
+import { defaultFormValues } from "@/app/utils/defaultFormValues";
+import { redirect, useRouter } from "next/navigation";
 
-function BookFormDialog({
-  open,
-  onOpenChange,
-  mode,
-  initialBook,
-}: BookFormDialogProps) {
-  const [formValues, setFormValues] = useState<BookFormValues>(() => ({
-    title: initialBook?.title ?? "",
-    category: initialBook?.category ?? "",
-    location: initialBook?.location ?? "",
-    author: initialBook?.author ?? "",
-    shelf_number: initialBook?.shelf_number ?? "",
-    language: initialBook?.language ?? "",
-  }));
+function NewBookPage() {
+  const [formValues, setFormValues] = useState<BookFormValues>({
+    ...defaultFormValues,
+  });
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [coverFile, setCoverFile] = useState<File | null>(null);
-  const [coverPreview, setCoverPreview] = useState<string | null>(
-    initialBook?.image_url ?? null,
-  );
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
   const { handleSave, selectedCategory, setSelectedCategory } =
     useBooksContext();
 
@@ -54,57 +33,66 @@ function BookFormDialog({
     { name: "shelf_number", label: "Shelf number", placeholder: "e.g. A-12" },
     { name: "location", label: "Location", placeholder: "e.g. Main Shelf A" },
   ];
-
+  //clear unused photos before generate new one
   useEffect(() => {
-    if (!coverPreview) return;
+    if (!coverPreview || !coverPreview.startsWith("blob:")) return;
 
     return () => URL.revokeObjectURL(coverPreview);
   }, [coverPreview]);
-
+  // Add the changes and check the field is one of BookFormValues type
   const handleFieldChange = (field: keyof BookFormValues, value: string) => {
     setFormValues((current) => ({ ...current, [field]: value }));
   };
-
+  // create the preview link for user befor send it
   const handleCoverChange = (file: File | undefined) => {
-    setCoverFile(file ?? null);
-    setCoverPreview(file ? URL.createObjectURL(file) : null);
-  };
+    if (!file) {
+      setCoverPreview(null);
+      return;
+    }
 
+    setCoverPreview(URL.createObjectURL(file));
+  };
+  // this for undo the image by clear the ref
+  const handleCoverUndo = () => {
+    setCoverPreview(null);
+    if (coverInputRef.current) {
+      coverInputRef.current.value = "";
+    }
+  };
+  // this function to handle submit form by create the image url and make the new book object
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const isValid = validateData(formValues);
-    if (!isValid) {
+    const valuesToValidate = {
+      ...formValues,
+      category: selectedCategory,
+    };
+
+    if (!validateData(valuesToValidate)) {
       setError("Please fill in all the required fields.");
       return;
     }
+
     setError("");
     setIsSubmitting(true);
 
     try {
-      const formData = new FormData();
-      if (coverFile) formData.append("cover", coverFile);
-
-      let imageUrl: string | undefined;
-      const coverFileFromFormData = formData.get("cover");
-      if (coverFileFromFormData instanceof File) {
-        imageUrl = await uploadBookCover(coverFileFromFormData);
-      }
-
-      const categoryValue =
-        mode === "edit" ? formValues.category : selectedCategory || formValues.category;
+      const imageUrl = await createImageUrl(coverInputRef);
 
       const newBook: Book = {
         ...formValues,
-        category: categoryValue,
-        created_at: initialBook?.created_at ?? new Date().toISOString(),
+        category: selectedCategory,
+        created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        is_deleted: initialBook?.is_deleted ?? false,
-        image_url: imageUrl || initialBook?.image_url || "",
+        is_deleted: false,
+        image_url: imageUrl,
       };
 
-      const saved = await handleSave(newBook, initialBook?.id);
-      if (saved) onOpenChange(false);
+      const saved = await handleSave(newBook);
+      if (saved) {
+        setError("");
+        router.push("/books");
+      }
     } catch (submitError) {
       setError(
         submitError instanceof Error
@@ -117,26 +105,23 @@ function BookFormDialog({
   };
 
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent
-        className="w-[calc(100%-2rem)] max-w-2xl
-    max-h-[90dvh] overflow-y-auto rounded-2xl border border-border bg-card shadow-dialog"
-      >
-        <AlertDialogHeader className="items-start text-left">
-          <span className="mb-2 inline-flex size-11 items-center justify-center rounded-xl bg-brass-soft text-primary">
-            <Image src={"/logo.png"} alt="Logo" width={44} height={44} />
+    <main className="mx-auto flex min-h-screen w-full max-w-2xl items-center justify-center px-4 py-10">
+      <div className="w-full max-w-2xl rounded-2xl border border-border bg-card p-6 shadow-dialog">
+        <div className="mb-5 flex items-center gap-3">
+          <span className="inline-flex size-11 items-center justify-center rounded-xl bg-brass-soft text-primary">
+            <Image src="/logo.png" alt="Logo" width={44} height={44} />
           </span>
 
-          <AlertDialogTitle>
-            {mode === "create" ? "Add a new book" : "Edit book details"}
-          </AlertDialogTitle>
-
-          <AlertDialogDescription>
-            {mode === "create"
-              ? "Add a book to your physical inventory and place it in the right shelf."
-              : "Update the book metadata and storage location."}
-          </AlertDialogDescription>
-        </AlertDialogHeader>
+          <div>
+            <h1 className="text-xl font-semibold text-foreground">
+              Add a new book
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Add a book to your physical inventory and place it in the right
+              shelf.
+            </p>
+          </div>
+        </div>
 
         <form id="book-form" onSubmit={handleSubmit} className="space-y-4">
           {fields.slice(0, 1).map(({ name, label, placeholder }) => (
@@ -147,7 +132,7 @@ function BookFormDialog({
               {label}
               <Input
                 id={`book-${name}`}
-                value={formValues[name]}
+                value={formValues[name] ?? ""}
                 onChange={(event) =>
                   handleFieldChange(name, event.target.value)
                 }
@@ -165,7 +150,7 @@ function BookFormDialog({
                 {label}
                 <Input
                   id={`book-${name}`}
-                  value={formValues[name]}
+                  value={formValues[name] ?? ""}
                   onChange={(event) =>
                     handleFieldChange(name, event.target.value)
                   }
@@ -174,15 +159,15 @@ function BookFormDialog({
               </label>
             ))}
           </div>
+
           <div className="w-full">
             <CategorySelector
               mode="add"
-              value={mode === "edit" ? formValues.category : selectedCategory}
+              value={selectedCategory}
               onValueChange={(category) => {
                 setFormValues((current) => ({ ...current, category }));
-                if (mode === "create") {
-                  setSelectedCategory(category);
-                }
+
+                setSelectedCategory(category);
               }}
             />
           </div>
@@ -194,14 +179,16 @@ function BookFormDialog({
             >
               Cover image
               <Input
+                ref={coverInputRef}
                 id="book-cover"
                 type="file"
                 accept="image/*"
                 onChange={(event) => handleCoverChange(event.target.files?.[0])}
               />
             </label>
+
             {coverPreview && (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center relative gap-3">
                 <Image
                   src={coverPreview}
                   alt="Selected book cover preview"
@@ -210,9 +197,16 @@ function BookFormDialog({
                   unoptimized
                   className="rounded-md object-cover"
                 />
-                <span className="text-sm text-muted-foreground">
-                  {coverFile?.name}
-                </span>
+
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleCoverUndo}
+                  className="absolute right-0 top-0"
+                >
+                  <X />
+                </Button>
               </div>
             )}
           </section>
@@ -225,21 +219,14 @@ function BookFormDialog({
           )}
         </form>
 
-        <AlertDialogFooter>
-          <AlertDialogCancel onClick={() => onOpenChange(false)}>
-            Cancel
-          </AlertDialogCancel>
+        <div className="mt-6 flex justify-end">
           <Button type="submit" form="book-form" disabled={isSubmitting}>
-            {isSubmitting
-              ? "Saving..."
-              : mode === "create"
-                ? "Add Book"
-                : "Save Changes"}
+            {isSubmitting ? "Saving..." : "Add Book"}
           </Button>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+        </div>
+      </div>
+    </main>
   );
 }
 
-export default BookFormDialog;
+export default NewBookPage;

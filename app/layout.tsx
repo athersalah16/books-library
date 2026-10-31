@@ -5,8 +5,9 @@ import { Toaster } from "@/components/ui/sonner";
 
 import HeaderAtMobile from "./components/common/SideBarAtMobile";
 import SideBar from "./components/common/SideBar";
-import BooksProvider from './context/BooksProvider';
+import BooksProvider from "./context/BooksProvider";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Suspense } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,11 +34,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <ClerkProvider>
           <BooksProvider>
             <div className="md:flex hidden w-16">
-             <SideBar/>
+              <Suspense fallback={<div className="w-64" />}>
+                <SideBar />
+              </Suspense>
             </div>
             <HeaderAtMobile />
             <main className=" min-h-dvh bg-background sm:ml-64">
-       
               {children}
             </main>
             <Toaster position="top-center" />
