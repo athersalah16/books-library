@@ -9,7 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Book, BookFormValues, BooksFields } from "@/app/types/book";
 import { validateData } from "@/app/utils/validateData";
 import { useBooksContext } from "@/app/context/BooksContext";
-import { createImageUrl } from "@/app/utils/createImageUrl";
 import { defaultFormValues } from "@/app/utils/defaultFormValues";
 import { useRouter } from "next/navigation";
 import useImage from "@/app/hooks/useImage";
@@ -50,7 +49,7 @@ function AddBookPage({ mode }: { mode?: string }) {
     }));
     setSelectedCategory(bookDetailsAI.category ?? "");
     createImageUrl(coverFile!);
-  }, [mode, bookDetailsAI]);
+  },[mode, bookDetailsAI, coverFile, setSelectedCategory, createImageUrl]);
 
   // Add the changes and check the field is one of BookFormValues type
   const handleFieldChange = (field: keyof BookFormValues, value: string) => {
