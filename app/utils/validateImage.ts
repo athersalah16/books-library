@@ -1,4 +1,8 @@
-export const validateImage = (file: File): string | null => {
+export const validateImage = (file: File | null | undefined): string | null => {
+  if (!file) {
+    return null;
+  }
+
   if (!file.type.startsWith("image/")) {
     return "File must be an image.";
   }
@@ -14,5 +18,6 @@ export const validateImage = (file: File): string | null => {
   if (!extension || !allowedExtensions.includes(extension)) {
     return "Unsupported image format.";
   }
+
   return null;
 };

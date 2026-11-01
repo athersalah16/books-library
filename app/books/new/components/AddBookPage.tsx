@@ -74,8 +74,9 @@ function AddBookPage({ mode }: { mode?: string }) {
     setIsSubmitting(true);
 
     try {
-      const imageUrl =
-        (await uploadBookCover(coverInputRef?.current?.files?.[0]!)) ?? "";
+      const selectedCoverFile =
+        coverInputRef?.current?.files?.[0] ?? coverFile ?? undefined;
+      const imageUrl = await uploadBookCover(selectedCoverFile);
 
       const newBook: Book = {
         ...formValues,
@@ -83,7 +84,7 @@ function AddBookPage({ mode }: { mode?: string }) {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         is_deleted: false,
-        image_url: imageUrl,
+        image_url: imageUrl || undefined,
       };
 
       const saved = await handleSave(newBook);

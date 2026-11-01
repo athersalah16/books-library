@@ -37,9 +37,7 @@ export async function POST(request: Request) {
     }
 
     const result = await response.json();
-    console.log("AI Response:", result); // Log the entire response for debugging
     const content = result.choices?.[0]?.message?.content;
-    console.log("Extracted Content:", content); // Log the extracted content for debugging
 
     return Response.json({ data: JSON.parse(content) });
   } catch (error) {

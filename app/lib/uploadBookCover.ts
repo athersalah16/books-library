@@ -4,16 +4,24 @@ import { auth } from "@clerk/nextjs/server";
 import { randomUUID } from "crypto";
 import { validateImage } from "../utils/validateImage";
 
-export async function uploadBookCover(cover: File): Promise<string> {
+export async function uploadBookCover(
+  cover: File | null | undefined,
+): Promise<string> {
+  if (!cover) {
+    return "";
+  }
+
   const supabase = await createConnection();
 
   const { userId } = await auth();
 
   const extension = cover.name.split(".").pop()?.toLowerCase();
   const isValidImage = validateImage(cover);
+
   if (isValidImage) {
     throw new Error(`Invalid image: ${isValidImage}`);
   }
+
   const uploadedPath = `${userId}/books/${randomUUID()}.${extension}`;
 
   const { error: uploadError } = await supabase.storage
