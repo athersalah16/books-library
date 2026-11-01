@@ -48,8 +48,8 @@ function AddBookPage({ mode }: { mode?: string }) {
       language: bookDetailsAI.language ?? "",
     }));
     setSelectedCategory(bookDetailsAI.category ?? "");
-    createImageUrl(coverFile ?? undefined);
-  }, [mode, bookDetailsAI, coverFile, setSelectedCategory, createImageUrl]);
+    createImageUrl(coverFile );
+  }, [mode, bookDetailsAI, coverFile]);
 
   // Add the changes and check the field is one of BookFormValues type
   const handleFieldChange = (field: keyof BookFormValues, value: string) => {
