@@ -35,7 +35,7 @@ function AddBookPage({ mode }: { mode?: string }) {
     setSelectedCategory,
     coverInputRef,
     bookDetailsAI,
-    coverFile
+    coverFile,
   } = useBooksContext();
   const { createImageUrl } = useImage();
 
@@ -48,8 +48,8 @@ function AddBookPage({ mode }: { mode?: string }) {
       language: bookDetailsAI.language ?? "",
     }));
     setSelectedCategory(bookDetailsAI.category ?? "");
-    createImageUrl(coverFile!);
-  },[mode, bookDetailsAI, coverFile, setSelectedCategory, createImageUrl]);
+    createImageUrl(coverFile ?? undefined);
+  }, [mode, bookDetailsAI, coverFile, setSelectedCategory, createImageUrl]);
 
   // Add the changes and check the field is one of BookFormValues type
   const handleFieldChange = (field: keyof BookFormValues, value: string) => {
@@ -74,7 +74,8 @@ function AddBookPage({ mode }: { mode?: string }) {
     setIsSubmitting(true);
 
     try {
-      const imageUrl = await uploadBookCover(coverInputRef?.current?.files?.[0]!)?? "";
+      const imageUrl =
+        (await uploadBookCover(coverInputRef?.current?.files?.[0]!)) ?? "";
 
       const newBook: Book = {
         ...formValues,
