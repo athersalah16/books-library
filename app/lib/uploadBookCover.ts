@@ -1,29 +1,19 @@
-'use server'
+"use server";
 import { createConnection } from "./createConnection";
 import { auth } from "@clerk/nextjs/server";
 import { randomUUID } from "crypto";
+import { validateImage } from "../utils/validateImage";
 
 export async function uploadBookCover(cover: File): Promise<string> {
   const supabase = await createConnection();
 
   const { userId } = await auth();
 
-  if (!cover.type.startsWith("image/")) {
-    throw new Error("Cover must be an image.");
-  }
-
-  if (cover.size > 5 * 1024 * 1024) {
-    throw new Error("Cover must be 5 MB or smaller.");
-  }
-
   const extension = cover.name.split(".").pop()?.toLowerCase();
-
-  const allowedExtensions = ["jpg", "jpeg", "png", "webp"];
-
-  if (!extension || !allowedExtensions.includes(extension)) {
-    throw new Error("Unsupported image format.");
+  const isValidImage = validateImage(cover);
+  if (isValidImage) {
+    throw new Error(`Invalid image: ${isValidImage}`);
   }
-
   const uploadedPath = `${userId}/books/${randomUUID()}.${extension}`;
 
   const { error: uploadError } = await supabase.storage

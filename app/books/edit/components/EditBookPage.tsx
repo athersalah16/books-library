@@ -1,19 +1,20 @@
 "use client";
 
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { AlertTriangle, X } from "lucide-react";
 import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Book, BookFormValues, BooksFields } from "@/app/types/book";
+import { BookFormValues, BooksFields } from "@/app/types/book";
 import { validateData } from "@/app/utils/validateData";
 import { useBooksContext } from "@/app/context/BooksContext";
 import { createImageUrl } from "@/app/utils/createImageUrl";
 import CategorySelector from "../../components/CategorySelector";
 import { getBookById } from "@/app/lib/getBookById";
 import { defaultFormValues } from "@/app/utils/defaultFormValues";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import ImagePreviewSection from "../../components/common/ImagePreviewSection";
 
 type Props = { bookId: string };
 
@@ -29,12 +30,16 @@ function EditBookPage({ bookId }: Props) {
   const [formValues, setFormValues] = useState(defaultFormValues);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [coverPreview, setCoverPreview] = useState<string | null>(null);
-  const coverInputRef = useRef<HTMLInputElement>(null);
-  const { handleSave, selectedCategory, setSelectedCategory } =
-    useBooksContext();
+  const {
+    handleSave,
+    selectedCategory,
+    setSelectedCategory,
+    coverInputRef,
+    coverPreview,
+  } = useBooksContext();
   const displayedImage = coverPreview || formValues?.image_url;
-  const router = useRouter()
+  const router = useRouter();
+
   useEffect(() => {
     const fetchBookById = async () => {
       const data = await getBookById(bookId);
@@ -52,30 +57,8 @@ function EditBookPage({ bookId }: Props) {
     fetchBookById();
   }, [bookId]);
 
-  useEffect(() => {
-    if (!coverPreview || !coverPreview.startsWith("blob:")) return;
-
-    return () => URL.revokeObjectURL(coverPreview);
-  }, [coverPreview]);
-  // Add the changes and check the field is one of BookFormValues type
   const handleFieldChange = (field: keyof BookFormValues, value: string) => {
     setFormValues((current) => ({ ...current, [field]: value }));
-  };
-  // create the preview link for user befor send it
-  const handleCoverChange = (file: File | undefined) => {
-    if (!file) {
-      setCoverPreview(null);
-      return;
-    }
-
-    setCoverPreview(URL.createObjectURL(file));
-  };
-  // this for undo the image by clear the ref
-  const handleCoverUndo = () => {
-    setCoverPreview(null);
-    if (coverInputRef.current) {
-      coverInputRef.current.value = "";
-    }
   };
   // this function to handle submit form by create the image url and make the new book object
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -95,8 +78,9 @@ function EditBookPage({ bookId }: Props) {
     setIsSubmitting(true);
 
     try {
-      const imageUrl = coverInputRef
-        ? await createImageUrl(coverInputRef)
+      const selectedFile = coverInputRef?.current?.files?.[0] ?? null;
+      const imageUrl = selectedFile
+        ? await createImageUrl(selectedFile)
         : formValues.image_url;
 
       const updatedBook = {
@@ -188,44 +172,10 @@ function EditBookPage({ bookId }: Props) {
             />
           </div>
 
-          <section className="space-y-3 rounded-xl border border-border p-3">
-            <label
-              htmlFor="book-cover"
-              className="flex flex-col gap-2 text-sm font-medium text-foreground"
-            >
-              Cover image
-              <Input
-                ref={coverInputRef}
-                id="book-cover"
-                type="file"
-                accept="image/*"
-                onChange={(event) => handleCoverChange(event.target.files?.[0])}
-              />
-            </label>
-
-            {displayedImage && (
-              <div className="flex items-center relative gap-3">
-                <Image
-                  src={displayedImage}
-                  alt="Selected book cover preview"
-                  width={72}
-                  height={96}
-                  unoptimized
-                  className="rounded-md object-cover"
-                />
-
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleCoverUndo}
-                  className="absolute right-0 top-0"
-                >
-                  <X />
-                </Button>
-              </div>
-            )}
-          </section>
+          <ImagePreviewSection
+            preview={displayedImage}
+            
+          />
 
           {error && (
             <p className="flex items-start gap-2 rounded-lg border border-destructive/40 bg-destructive/8 px-3 py-2 text-sm text-destructive">

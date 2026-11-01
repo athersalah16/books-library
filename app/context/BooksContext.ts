@@ -12,12 +12,22 @@ type BooksContextType = {
   books: Book[];
   unTrashedBooks: Book[];
   trashedBooks: Book[];
-  handleSave: (values: BookFormValues | Book, bookId?: string) => Promise<boolean>;
+  handleSave: (
+    values: BookFormValues | Book,
+    bookId?: string,
+  ) => Promise<boolean>;
   handleMoveToTrash: (id: string, value: boolean) => Promise<void>;
   handleDelete: (id: string) => Promise<void>;
   status: Status;
   setSelectedCategory: React.Dispatch<React.SetStateAction<string>>;
   selectedCategory: string;
+  coverPreview: string | null;
+  setCoverPreview: React.Dispatch<React.SetStateAction<string | null>>;
+  coverInputRef: React.RefObject<HTMLInputElement>;
+  bookDetailsAI: Book | null;
+  setBookDetailsAI: React.Dispatch<React.SetStateAction<Book | null>>;
+  coverFile: File | null;
+  setCoverFile: React.Dispatch<React.SetStateAction<File | null>>;
 };
 
 export const BooksContext = createContext<BooksContextType | undefined>(

@@ -2,14 +2,12 @@
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import SideBar from "./SideBar";
-import {  useUser } from "@clerk/nextjs";
 
 function HeaderAtMobile() {
   const [isOpen, setIsOpen] = useState(false);
-      const { isSignedIn } = useUser();
 
   const handleClick = () => {
-    setIsOpen(!isOpen);
+    setIsOpen((prevState) => !prevState);
   };
   return (
     <>

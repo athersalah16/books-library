@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { BooksContext } from "./BooksContext";
 import { toast } from "sonner";
 import { Book, BookFormValues } from "../types/book";
@@ -14,13 +14,17 @@ type Props = {
 };
 
 function BooksProvider({ children }: Props) {
+  const [bookDetailsAI, setBookDetailsAI] = useState<Book | null>(null);
   const [books, setBooks] = useState<Book[]>([]);
   const unTrashedBooks = books.filter((book) => !book.is_deleted);
   const trashedBooks = books.filter((book) => book.is_deleted);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null) as React.RefObject<HTMLInputElement>;
 
   const status = {
-    totalActive: books.length,
+    totalActive: unTrashedBooks.length,
     totalLocations: new Set(books.map((book) => book.location)).size,
     totalDeleted: trashedBooks.length ?? 0,
   };
@@ -94,8 +98,15 @@ function BooksProvider({ children }: Props) {
         trashedBooks,
         unTrashedBooks,
         handleSave,
-        handleMoveToTrash,handleDelete,
-      
+        handleMoveToTrash,
+        handleDelete,
+        coverInputRef,
+        bookDetailsAI,
+        setBookDetailsAI,
+        coverPreview,
+        setCoverPreview,
+        coverFile,
+        setCoverFile,
         status,
         selectedCategory,
         setSelectedCategory,
