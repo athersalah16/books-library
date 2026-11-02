@@ -16,7 +16,6 @@ type Props = {
 function BooksProvider({ children }: Props) {
   const [books, setBooks] = useState<Book[]>([]);
   const [bookDetailsAI, setBookDetailsAI] = useState<Book | null>(null);
-  
 
   const unTrashedBooks = useMemo(
     () => books.filter((book) => !book.is_deleted),
@@ -42,7 +41,6 @@ function BooksProvider({ children }: Props) {
     const fetchBooks = async () => {
       const books = await getBooks();
       setBooks(books);
-      
     };
 
     fetchBooks().catch(() => {
@@ -54,21 +52,28 @@ function BooksProvider({ children }: Props) {
     values: BookFormValues | Book,
     bookId: string = "",
   ): Promise<boolean> => {
-    if (bookId) {
-      const updatedBook = await updateBook(bookId, values);
-      setBooks((currentBooks) =>
-        currentBooks.map((book) =>
-          book.id === bookId ? { ...book, ...updatedBook } : book,
-        ),
-      );
-      toast.success(`${updatedBook.title} was updated.`);
-      return true;
-    }
+    try {
+      if (bookId) {
+        const updatedBook = await updateBook(bookId, values);
+        setBooks((currentBooks) =>
+          currentBooks.map((book) =>
+            book.id === bookId ? { ...book, ...updatedBook } : book,
+          ),
+        );
+        toast.success(`${updatedBook.title} was updated.`);
+        return true;
+      }
 
-    const createdBook = await addBook(values);
-    setBooks((currentBooks) => [...currentBooks, createdBook]);
-    toast.success(`${createdBook.title} was added to your inventory.`);
-    return true;
+      const createdBook = await addBook(values);
+      setBooks((currentBooks) => [...currentBooks, createdBook]);
+      toast.success(`${createdBook.title} was added to your inventory.`);
+      return true;
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Unable to add",
+      );
+      return false;
+    }
   };
 
   const handleMoveToTrash = async (id: string, value: boolean) => {
