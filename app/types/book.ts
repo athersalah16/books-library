@@ -19,6 +19,7 @@ export type BookFormValues = {
   shelf_number: string;
   location: string;
   language: string;
+  image_url?: string;
 };
 export type BookFormDialogProps = {
   open: boolean;

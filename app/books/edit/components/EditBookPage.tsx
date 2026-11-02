@@ -6,39 +6,34 @@ import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { BookFormValues, BooksFields } from "@/app/types/book";
+import { BookFormValues } from "@/app/types/book";
 import { validateData } from "@/app/utils/validateData";
 import { useBooksContext } from "@/app/context/BooksContext";
-import { createImageUrl } from "@/app/utils/createImageUrl";
 import CategorySelector from "../../components/CategorySelector";
 import { getBookById } from "@/app/lib/getBookById";
 import { defaultFormValues } from "@/app/utils/defaultFormValues";
 import { useRouter } from "next/navigation";
 import ImagePreviewSection from "../../components/common/ImagePreviewSection";
+import { fields } from "@/app/utils/fields";
+import { uploadBookCover } from "@/app/lib/uploadBookCover";
+import useFieldsChanges from "@/app/hooks/useFieldsChanges";
 
 type Props = { bookId: string };
 
-const fields: BooksFields[] = [
-  { name: "title", label: "Title", placeholder: "Enter a book title" },
-  { name: "author", label: "Author", placeholder: "Enter the author name" },
-  { name: "language", label: "Language", placeholder: "e.g. English" },
-  { name: "shelf_number", label: "Shelf number", placeholder: "e.g. A-12" },
-  { name: "location", label: "Location", placeholder: "e.g. Main Shelf A" },
-];
-
 function EditBookPage({ bookId }: Props) {
-  const [formValues, setFormValues] = useState(defaultFormValues);
+  const [formValues, setFormValues] =
+    useState<BookFormValues>(defaultFormValues);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const {
     handleSave,
-    selectedCategory,
-    setSelectedCategory,
     coverInputRef,
     coverPreview,
   } = useBooksContext();
   const displayedImage = coverPreview || formValues?.image_url;
   const router = useRouter();
+  const { handleCategoryChange, handleFieldChange } =
+    useFieldsChanges(setFormValues);
 
   useEffect(() => {
     const fetchBookById = async () => {
@@ -49,7 +44,7 @@ function EditBookPage({ bookId }: Props) {
       setFormValues({
         ...defaultFormValues,
         ...data,
-        category: data.category ?? selectedCategory,
+        category: data.category ?? "",
         image_url: data.image_url ?? "",
       });
     };
@@ -57,16 +52,12 @@ function EditBookPage({ bookId }: Props) {
     fetchBookById();
   }, [bookId]);
 
-  const handleFieldChange = (field: keyof BookFormValues, value: string) => {
-    setFormValues((current) => ({ ...current, [field]: value }));
-  };
   // this function to handle submit form by create the image url and make the new book object
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const valuesToValidate = {
       ...formValues,
-      category: formValues.category ?? selectedCategory,
     };
 
     if (!validateData(valuesToValidate)) {
@@ -80,12 +71,11 @@ function EditBookPage({ bookId }: Props) {
     try {
       const selectedFile = coverInputRef?.current?.files?.[0] ?? null;
       const imageUrl = selectedFile
-        ? await createImageUrl(selectedFile)
+        ? await uploadBookCover(selectedFile)
         : formValues.image_url;
 
       const updatedBook = {
         ...formValues,
-        category: formValues.category ?? selectedCategory,
         updated_at: new Date().toISOString(),
         image_url: imageUrl,
       };
@@ -93,6 +83,8 @@ function EditBookPage({ bookId }: Props) {
       const saved = await handleSave(updatedBook, bookId);
       if (saved) {
         setError("");
+        setFormValues(defaultFormValues);
+
         router.push("/books");
       }
     } catch (submitError) {
@@ -163,19 +155,12 @@ function EditBookPage({ bookId }: Props) {
           <div className="w-full">
             <CategorySelector
               mode="add"
-              value={formValues.category}
-              onValueChange={(category) => {
-                setFormValues((current) => ({ ...current, category }));
-
-                setSelectedCategory(category);
-              }}
+              value={formValues.category ?? ""}
+              onValueChange={handleCategoryChange}
             />
           </div>
 
-          <ImagePreviewSection
-            preview={displayedImage}
-            
-          />
+          <ImagePreviewSection preview={displayedImage} />
 
           {error && (
             <p className="flex items-start gap-2 rounded-lg border border-destructive/40 bg-destructive/8 px-3 py-2 text-sm text-destructive">

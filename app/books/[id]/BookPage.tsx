@@ -20,9 +20,11 @@ import { useBooksContext } from "@/app/context/BooksContext";
 import { getBookById } from "@/app/lib/getBookById";
 import { useEffect, useState } from "react";
 import { Book } from "@/app/types/book";
-import {  useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import BookHeader from "./components/BookHeader";
 import NoBookCover from "./components/NoBookCover";
+import { toast } from "sonner";
+import NoBooksFound from "@/app/components/common/NoBooksFound";
 
 type Props = { bookId: string };
 
@@ -33,47 +35,58 @@ function BookPage({ bookId }: Props) {
 
   useEffect(() => {
     const fetchBookById = async () => {
-      const data = await getBookById(bookId);
-      if (data) setBook(data);
+      try {
+        const data = await getBookById(bookId);
+        if (data) setBook(data);
+      } catch (error: Error | any) {
+        toast.error(
+          error?.message ||
+            "Failed to fetch book details. Please try again later.",
+        );
+      }
     };
     fetchBookById();
   }, []);
 
   if (!book) return;
 
-  const { id, image_url, title } = book;
+  const { id, image_url, title } = book!;
 
   const displayBook = [
     { label: "Title", value: title, icon: BookOpen },
-    { label: "Author", value: book.author, icon: UserRound },
-    { label: "Category", value: book.category, icon: Tags },
-    { label: "Language", value: book.language, icon: Languages },
-    { label: "Location", value: book.location, icon: MapPin },
-    { label: "Shelf number", value: book.shelf_number, icon: Hash },
+    { label: "Author", value: book?.author, icon: UserRound },
+    { label: "Category", value: book?.category, icon: Tags },
+    { label: "Language", value: book?.language, icon: Languages },
+    { label: "Location", value: book?.location, icon: MapPin },
+    { label: "Shelf number", value: book?.shelf_number, icon: Hash },
     {
       label: "Added to library",
-      value: new Date(book.created_at).toLocaleString(),
+      value: book?.created_at
+        ? new Date(book.created_at).toLocaleString()
+        : "Not provided",
       icon: CalendarDays,
     },
     {
       label: "Last updated",
-      value: new Date(book.updated_at).toLocaleString(),
+      value: book?.updated_at
+        ? new Date(book.updated_at).toLocaleString()
+        : "Not provided",
       icon: Clock3,
     },
     {
       label: "Status",
-      value: book.is_deleted ? "In trash" : "In library",
-      icon: book.is_deleted ? Trash2 : Archive,
+      value: book?.is_deleted ? "In trash" : "In library",
+      icon: book?.is_deleted ? Trash2 : Archive,
     },
   ];
 
   const handleTrash = async () => {
-    await handleMoveToTrash(id!, !book.is_deleted);
+    await handleMoveToTrash(id!, !book?.is_deleted);
     router.push("/");
   };
 
   const handleEdit = () => {
-    router.push(`/books/edit/${id}`)
+    router.push(`/books/edit/${id}`);
   };
 
   return (
@@ -121,10 +134,10 @@ function BookPage({ bookId }: Props) {
         <footer className="flex flex-col gap-3 border-t border-border bg-card px-4 py-4 sm:px-6 sm:py-5 lg:flex-row lg:items-center lg:justify-end lg:px-8">
           <Button
             onClick={handleTrash}
-            variant={book.is_deleted ? "outline" : "destructive"}
+            variant={book?.is_deleted ? "outline" : "destructive"}
             className="w-full sm:w-auto"
           >
-            {book.is_deleted ? (
+            {book?.is_deleted ? (
               <>
                 <ArchiveRestore className="size-4" /> Restore
               </>
@@ -142,7 +155,6 @@ function BookPage({ bookId }: Props) {
             <Pen className="size-4" />
             Edit Book
           </Button>
-       
         </footer>
       </div>
     </main>

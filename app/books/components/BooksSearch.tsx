@@ -1,14 +1,20 @@
+'use client'
 import { Input } from '@/components/ui/input';
-import React from 'react'
 
-function BooksSearch({ search, setSearch }: { search: string; setSearch: (value: string) => void }) {
+type Props = {
+  search: string;
+  setSearch: (value: string) => void;
+};
+
+function BooksSearch({ search, setSearch }: Props) {
+ 
   return (
      <div className="w-full md:max-w-sm py-2">
             <label
               htmlFor="book-search"
               className="mb-2 block text-sm font-medium text-foreground"
             >
-              Search by title
+              Search by title or author
             </label>
             <Input
               id="book-search"

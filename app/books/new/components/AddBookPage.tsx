@@ -13,14 +13,8 @@ import { defaultFormValues } from "@/app/utils/defaultFormValues";
 import { useRouter } from "next/navigation";
 import useImage from "@/app/hooks/useImage";
 import { uploadBookCover } from "@/app/lib/uploadBookCover";
-
-const fields: BooksFields[] = [
-  { name: "title", label: "Title", placeholder: "Enter a book title" },
-  { name: "author", label: "Author", placeholder: "Enter the author name" },
-  { name: "language", label: "Language", placeholder: "e.g. English" },
-  { name: "shelf_number", label: "Shelf number", placeholder: "e.g. A-12" },
-  { name: "location", label: "Location", placeholder: "e.g. Main Shelf A" },
-];
+import { fields } from "@/app/utils/fields";
+import useFieldsChanges from "@/app/hooks/useFieldsChanges";
 
 function AddBookPage({ mode }: { mode?: string }) {
   const [formValues, setFormValues] = useState<BookFormValues>({
@@ -31,13 +25,12 @@ function AddBookPage({ mode }: { mode?: string }) {
   const router = useRouter();
   const {
     handleSave,
-    selectedCategory,
-    setSelectedCategory,
     coverInputRef,
     bookDetailsAI,
     coverFile,
   } = useBooksContext();
   const { createImageUrl } = useImage();
+  const {handleCategoryChange, handleFieldChange} = useFieldsChanges(setFormValues);
 
   useEffect(() => {
     if (mode !== "ai" || !bookDetailsAI) return;
@@ -46,15 +39,12 @@ function AddBookPage({ mode }: { mode?: string }) {
       title: bookDetailsAI.title ?? "",
       author: bookDetailsAI.author ?? "",
       language: bookDetailsAI.language ?? "",
+      category: bookDetailsAI.category ?? previous.category,
     }));
-    setSelectedCategory(bookDetailsAI.category ?? "");
-    createImageUrl(coverFile );
+    createImageUrl(coverFile);
   }, [mode, bookDetailsAI, coverFile]);
 
   // Add the changes and check the field is one of BookFormValues type
-  const handleFieldChange = (field: keyof BookFormValues, value: string) => {
-    setFormValues((current) => ({ ...current, [field]: value }));
-  };
 
   // this function to handle submit form by create the image url and make the new book object
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -62,7 +52,6 @@ function AddBookPage({ mode }: { mode?: string }) {
 
     const valuesToValidate = {
       ...formValues,
-      category: selectedCategory,
     };
 
     if (!validateData(valuesToValidate)) {
@@ -80,7 +69,6 @@ function AddBookPage({ mode }: { mode?: string }) {
 
       const newBook: Book = {
         ...formValues,
-        category: selectedCategory,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         is_deleted: false,
@@ -163,12 +151,8 @@ function AddBookPage({ mode }: { mode?: string }) {
           <div className="w-full">
             <CategorySelector
               mode="add"
-              value={selectedCategory}
-              onValueChange={(category) => {
-                setFormValues((current) => ({ ...current, category }));
-
-                setSelectedCategory(category);
-              }}
+              value={formValues.category ?? ""}
+              onValueChange={handleCategoryChange}
             />
           </div>
 

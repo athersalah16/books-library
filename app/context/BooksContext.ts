@@ -19,8 +19,6 @@ type BooksContextType = {
   handleMoveToTrash: (id: string, value: boolean) => Promise<void>;
   handleDelete: (id: string) => Promise<void>;
   status: Status;
-  setSelectedCategory: React.Dispatch<React.SetStateAction<string>>;
-  selectedCategory: string;
   coverPreview: string | null;
   setCoverPreview: React.Dispatch<React.SetStateAction<string | null>>;
   coverInputRef: React.RefObject<HTMLInputElement>;
@@ -28,6 +26,7 @@ type BooksContextType = {
   setBookDetailsAI: React.Dispatch<React.SetStateAction<Book | null>>;
   coverFile: File | null;
   setCoverFile: React.Dispatch<React.SetStateAction<File | null>>;
+
 };
 
 export const BooksContext = createContext<BooksContextType | undefined>(
