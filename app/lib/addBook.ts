@@ -1,22 +1,53 @@
-"use server";
-
-import { createConnection } from "./createConnection";
 import { Book, BookFormValues } from "../types/book";
-export async function addBook(newBook: BookFormValues): Promise<Book> {
-  const supabase = await createConnection();
+import { createConnection } from "./createConnection";
 
-  const { data, error } = await supabase
-    .from("books")
-    .insert(newBook)
-    .select("*")
-    .single();
 
-  if (error?.code === "23505") {
-    throw new Error("A book with this title already exists.");
+type AddBookResult =
+  | { success: true; book: Book }
+  | {
+      success: false;
+      code: "DUPLICATE_TITLE" | "ADD_FAILED";
+      message: string;
+    };
+
+export async function addBook(
+  newBook: BookFormValues,
+): Promise<AddBookResult> {
+  try {
+    const supabase = await createConnection();
+
+    const { data, error } = await supabase
+      .from("books")
+      .insert(newBook)
+      .select("*")
+      .single();
+
+    if (error?.code === "23505") {
+      return {
+        success: false,
+        code: "DUPLICATE_TITLE",
+        message: "A book with this title already exists.",
+      };
+    }
+
+    if (error || !data) {
+     
+
+      return {
+        success: false,
+        code: "ADD_FAILED",
+        message: "Unable to add the book. Please try again.",
+      };
+    }
+
+    return { success: true, book: data };
+  } catch (error) {
+  
+
+    return {
+      success: false,
+      code: "ADD_FAILED",
+      message: "Unable to add the book. Please try again.",
+    };
   }
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  return data;
 }

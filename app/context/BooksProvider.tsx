@@ -64,13 +64,17 @@ function BooksProvider({ children }: Props) {
         return true;
       }
 
-      const createdBook = await addBook(values);
-      setBooks((currentBooks) => [...currentBooks, createdBook]);
-      toast.success(`${createdBook.title} was added to your inventory.`);
+      const result = await addBook(values);
+      if (!result.success) {
+        toast.error(result.message);
+        return false;
+      }
+      setBooks((currentBooks) => [...currentBooks, result.book]);
+      toast.success(`${result.book.title} was added to your inventory.`);
       return true;
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Unable to add",
+        error instanceof Error ? error.message : "Unable to add Book",
       );
       return false;
     }
