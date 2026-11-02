@@ -1,3 +1,4 @@
+'use server'
 import { Book, BookFormValues } from "../types/book";
 import { createConnection } from "./createConnection";
 
@@ -31,8 +32,7 @@ export async function addBook(
     }
 
     if (error || !data) {
-     
-
+    
       return {
         success: false,
         code: "ADD_FAILED",
