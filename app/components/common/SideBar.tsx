@@ -1,7 +1,13 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { BookOpen, LayoutGridCircles, Trash2 } from "lucide-react";
+import {
+  BookOpen,
+  BookOpenText,
+  LayoutGridCircles,
+  Sparkles,
+  Trash2,
+} from "lucide-react";
 import type { NavigationType } from "@/app/types/NavigationType";
 import { usePathname } from "next/navigation";
 import { SignUpButton, UserButton, useUser } from "@clerk/nextjs";
@@ -64,6 +70,18 @@ function SideBar() {
           </Link>
         ))}
       </ul>
+      <div className="px-4">
+        <Link href={"/chat"}>
+
+          <div className="flex items-center gap-3 bg-sidebar-accent px-4 py-3 cursor-pointer  rounded-md">
+            <div className="relative ">
+              <BookOpenText className="size-6 text-primary" />
+              <Sparkles className="absolute -right-2 -top-2 size-3 text-primary" />
+            </div>
+            <span className="font-semibold">Maktabty AI </span>
+          </div>
+        </Link>
+      </div>
     </aside>
   );
 }

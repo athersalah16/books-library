@@ -1,12 +1,16 @@
-import { currentUser } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { sendToAI } from "./lib/SendToAI";
 import { validateImage } from "@/app/utils/validateImage";
 
 export async function POST(request: Request) {
   try {
-    const loggedInUser = await currentUser();
-    if (!loggedInUser) {
-      throw new Error("User not authenticated");
+      const { userId } = await auth();
+
+    if (!userId) {
+      return Response.json(
+        { error: "Unauthorized. Please sign in." },
+        { status: 401 }
+      );
     }
 
     const formData = await request.formData();
@@ -29,7 +33,7 @@ export async function POST(request: Request) {
     const base64 = Buffer.from(bytes).toString("base64");
 
     const imageDataUrl = `data:${image.type};base64,${base64}`;
-    const response = await sendToAI(imageDataUrl);
+    const response = await sendToAI({ isChatBot: false, imageDataUrl });
 
     if (!response.ok) {
       const errorData = await response.json();
