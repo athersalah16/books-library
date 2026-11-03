@@ -6,7 +6,7 @@ import CategorySelector from "./../../components/CategorySelector";
 import ImagePreviewSection from "@/app/books/components/common/ImagePreviewSection";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Book, BookFormValues, BooksFields } from "@/app/types/book";
+import { Book, BookFormValues } from "@/app/types/book";
 import { validateData } from "@/app/utils/validateData";
 import { useBooksContext } from "@/app/context/BooksContext";
 import { defaultFormValues } from "@/app/utils/defaultFormValues";
