@@ -1,6 +1,7 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { sendToAI } from "../books/extract/lib/SendToAI";
 import { getBooks } from "@/app/lib/getBooks";
+import { BookForAI } from "@/app/types/book";
 
 export async function POST(request: Request) {
   try {
@@ -22,7 +23,7 @@ export async function POST(request: Request) {
         { status: 400 },
       );
     }
-    if (message.length>1000) {
+    if (message.length > 1000) {
       return Response.json(
         { error: "The message is greather than mas length" },
         { status: 400 },
@@ -32,12 +33,25 @@ export async function POST(request: Request) {
     if (!books.length) {
       return Response.json({ error: "Cannot access books" }, { status: 500 });
     }
-
+    const booksForAI:BookForAI[] = books
+      .filter((book) => !book.is_deleted)
+      .map(({ title, author, category, language, shelf_number, location , created_at,updated_at}) => ({
+        title,
+        author,
+        category,
+        language,
+        shelf_number,
+        location,
+        created_at,
+        updated_at
+      }));
     const response = await sendToAI({
       isChatBot: true,
       userMessage: message,
-      booksContext: books,
+      booksContext: booksForAI,
     });
+
+
 
     if (!response.ok) {
       const errorData = await response.json();

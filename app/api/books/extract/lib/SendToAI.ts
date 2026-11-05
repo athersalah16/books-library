@@ -1,12 +1,12 @@
 import { systemPromptChatBot } from "@/app/api/chat/lib/prompt";
 import { systemPrompt } from "./prompt";
-import type { Book } from "@/app/types/book";
+import type { Book, BookForAI } from "@/app/types/book";
 
 type AIRequest =
   | {
       isChatBot: true;
       userMessage: string;
-      booksContext: Book[];
+      booksContext: BookForAI[];
       imageDataUrl?: never;
     }
   | {

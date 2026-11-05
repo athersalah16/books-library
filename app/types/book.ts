@@ -12,6 +12,20 @@ export interface Book {
   image_url?: string
 }
 
+
+export interface BookForAI {
+  
+  title: string;
+  category: string;   
+  author: string;
+  location: string;
+  shelf_number: string;
+  language: string;
+  created_at: string;
+  updated_at: string;
+ 
+}
+
 export type BookFormValues = {
   title: string;
   category: string;

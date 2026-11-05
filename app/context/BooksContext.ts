@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useContext } from "react";
 import { Book, BookFormValues } from "../types/book";
+import { ChatMessage } from "../types/ChatBot";
 
 type Status = {
   totalActive: number;
@@ -26,6 +27,8 @@ type BooksContextType = {
   setBookDetailsAI: React.Dispatch<React.SetStateAction<Book | null>>;
   coverFile: File | null;
   setCoverFile: React.Dispatch<React.SetStateAction<File | null>>;
+  messages: ChatMessage[]
+  setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
 
 };
 

@@ -8,6 +8,7 @@ import { getBooks } from "../lib/getBooks";
 import { moveToTrash } from "../lib/moveToTrash";
 import { deleteBook } from "../lib/deleteBook";
 import { updateBook } from "../lib/updateBook";
+import { ChatMessage } from "../types/ChatBot";
 
 type Props = {
   children: React.ReactNode;
@@ -15,6 +16,7 @@ type Props = {
 
 function BooksProvider({ children }: Props) {
   const [books, setBooks] = useState<Book[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [bookDetailsAI, setBookDetailsAI] = useState<Book | null>(null);
 
   const unTrashedBooks = useMemo(
@@ -127,6 +129,8 @@ function BooksProvider({ children }: Props) {
         coverFile,
         setCoverFile,
         status,
+        messages,
+        setMessages
       }}
     >
       {children}
